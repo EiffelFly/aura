@@ -1,5 +1,5 @@
 {
-  "name": "create-t3-turbo",
+  "name": "aura",
   "private": true,
   "engines": {
     "node": ">=20.12.0"
@@ -22,11 +22,11 @@
     "ui-add": "pnpm -F ui ui-add"
   },
   "devDependencies": {
-    "@acme/prettier-config": "workspace:*",
+    "@aura/prettier-config": "workspace:*",
     "@turbo/gen": "^1.13.3",
     "prettier": "^3.2.5",
     "turbo": "^1.13.3",
     "typescript": "^5.4.5"
   },
-  "prettier": "@acme/prettier-config"
+  "prettier": "@aura/prettier-config"
 }
