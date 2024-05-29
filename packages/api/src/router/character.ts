@@ -3,23 +3,27 @@ import "@aura/db/schema";
 import { TRPCRouterRecord } from "@trpc/server";
 import { z } from "zod";
 
-import { desc, eq } from "@aura/db";
+import { and, desc, eq } from "@aura/db";
 import { Character, CreateDialogueSchema } from "@aura/db/schema";
 
-import { protectedProcedure, publicProcedure } from "../trpc";
+import { protectedProcedure } from "../trpc";
 
 export const characterRouter = {
-  all: publicProcedure.query(({ ctx }) => {
+  all: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.Character.findMany({
+      where: eq(Character.ownerId, ctx.session.user.id),
       orderBy: desc(Character.id),
       limit: 100,
     });
   }),
-  byId: publicProcedure
+  byId: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.Character.findFirst({
-        where: eq(Character.id, input.id),
+        where: and(
+          eq(Character.id, input.id),
+          eq(Character.ownerId, ctx.session.user.id),
+        ),
       });
     }),
   create: protectedProcedure
@@ -28,6 +32,13 @@ export const characterRouter = {
       return ctx.db.insert(Character).values(input);
     }),
   delete: protectedProcedure.input(z.string()).mutation(({ ctx, input }) => {
-    return ctx.db.delete(Character).where(eq(Character.id, input));
+    return ctx.db
+      .delete(Character)
+      .where(
+        and(
+          eq(Character.id, input),
+          eq(Character.ownerId, ctx.session.user.id),
+        ),
+      );
   }),
 } satisfies TRPCRouterRecord;

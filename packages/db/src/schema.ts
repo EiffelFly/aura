@@ -169,6 +169,9 @@ export const WorkCharacter = pgTable(
     characterId: uuid("characterId")
       .notNull()
       .references(() => Character.id),
+    ownerId: uuid("ownerId")
+      .notNull()
+      .references(() => User.id),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt", {
       mode: "date",
@@ -207,6 +210,9 @@ export const CharacterDialogue = pgTable(
     dialogueId: uuid("dialogueId")
       .notNull()
       .references(() => Dialogue.id),
+    ownerId: uuid("ownerId")
+      .notNull()
+      .references(() => User.id),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt", {
       mode: "date",

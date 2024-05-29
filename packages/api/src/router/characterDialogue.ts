@@ -9,38 +9,46 @@ import {
   Dialogue,
 } from "@aura/db/schema";
 
-import { protectedProcedure, publicProcedure } from "../trpc";
+import { protectedProcedure } from "../trpc";
 
 export const characterDialogueRouter = {
-  all: publicProcedure.query(({ ctx }) => {
+  all: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.CharacterDialogue.findMany({
+      where: eq(CharacterDialogue.ownerId, ctx.session.user.id),
       orderBy: desc(Character.id),
       limit: 100,
     });
   }),
-  byCharacterId: publicProcedure
+  byCharacterId: protectedProcedure
     .input(z.object({ characterId: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.CharacterDialogue.findMany({
-        where: eq(Character.id, input.characterId),
+        where: and(
+          eq(Character.id, input.characterId),
+          eq(CharacterDialogue.ownerId, ctx.session.user.id),
+        ),
         limit: 100,
       });
     }),
-  byDialogueId: publicProcedure
+  byDialogueId: protectedProcedure
     .input(z.object({ dialogueId: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.CharacterDialogue.findMany({
-        where: eq(Dialogue.id, input.dialogueId),
+        where: and(
+          eq(Dialogue.id, input.dialogueId),
+          eq(CharacterDialogue.ownerId, ctx.session.user.id),
+        ),
         limit: 100,
       });
     }),
-  byCharacterAndDialogueId: publicProcedure
+  byCharacterAndDialogueId: protectedProcedure
     .input(z.object({ characterId: z.string(), dialogueId: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.CharacterDialogue.findFirst({
         where: and(
           eq(Character.id, input.characterId),
           eq(Dialogue.id, input.dialogueId),
+          eq(CharacterDialogue.ownerId, ctx.session.user.id),
         ),
       });
     }),
@@ -58,6 +66,7 @@ export const characterDialogueRouter = {
           and(
             eq(Character.id, input.characterId),
             eq(Dialogue.id, input.dialogueId),
+            eq(CharacterDialogue.ownerId, ctx.session.user.id),
           ),
         );
     }),

@@ -1,26 +1,30 @@
 import { TRPCRouterRecord } from "@trpc/server";
 import { z } from "zod";
 
-import { desc, eq } from "@aura/db";
+import { and, desc, eq } from "@aura/db";
 
 import "@aura/db/schema";
 
 import { CreateDialogueSchema, Dialogue } from "@aura/db/schema";
 
-import { protectedProcedure, publicProcedure } from "../trpc";
+import { protectedProcedure } from "../trpc";
 
 export const dialogueRouter = {
-  all: publicProcedure.query(({ ctx }) => {
+  all: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.Dialogue.findMany({
+      where: eq(Dialogue.ownerId, ctx.session.user.id),
       orderBy: desc(Dialogue.id),
       limit: 100,
     });
   }),
-  byId: publicProcedure
+  byId: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.Dialogue.findFirst({
-        where: eq(Dialogue.id, input.id),
+        where: and(
+          eq(Dialogue.id, input.id),
+          eq(Dialogue.ownerId, ctx.session.user.id),
+        ),
       });
     }),
   create: protectedProcedure
@@ -29,6 +33,10 @@ export const dialogueRouter = {
       return ctx.db.insert(Dialogue).values(input);
     }),
   delete: protectedProcedure.input(z.string()).mutation(({ ctx, input }) => {
-    return ctx.db.delete(Dialogue).where(eq(Dialogue.id, input));
+    return ctx.db
+      .delete(Dialogue)
+      .where(
+        and(eq(Dialogue.id, input), eq(Dialogue.ownerId, ctx.session.user.id)),
+      );
   }),
 } satisfies TRPCRouterRecord;
