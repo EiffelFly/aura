@@ -182,6 +182,14 @@ export const WorkCharacter = pgTable(
   }),
 );
 
+export const createWorkCharacterSchema = createInsertSchema(WorkCharacter, {
+  workId: z.string(),
+  characterId: z.string(),
+}).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const WorkCharacterRelations = relations(WorkCharacter, ({ one }) => ({
   work: one(Work, { fields: [WorkCharacter.workId], references: [Work.id] }),
   character: one(Character, {
@@ -211,6 +219,17 @@ export const CharacterDialogue = pgTable(
     }),
   }),
 );
+
+export const createCharacterDialogueSchema = createInsertSchema(
+  CharacterDialogue,
+  {
+    characterId: z.string(),
+    dialogueId: z.string(),
+  },
+).omit({
+  createdAt: true,
+  updatedAt: true,
+});
 
 export const CharacterDialogueRelations = relations(
   CharacterDialogue,
