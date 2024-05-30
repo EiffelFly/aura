@@ -1,8 +1,11 @@
 "use client";
 
-import Editor from "~/components/editor";
+import dynamic from "next/dynamic";
+
 import { Overview } from "~/components/overview";
 import { AuraStore, useAuraStore, useShallow } from "~/use-aura-store";
+
+const Editor = dynamic(() => import("~/components/editor"), { ssr: false });
 
 export const runtime = "edge";
 
@@ -15,7 +18,13 @@ export default function HomePage() {
 
   return (
     <main className="h-screen">
-      {isEditorView ? <Editor markdown="##test" /> : <Overview />}
+      {isEditorView ? (
+        <div className="mx-auto max-w-[960px] py-[150px]">
+          <Editor markdown="## test" />
+        </div>
+      ) : (
+        <Overview />
+      )}
     </main>
   );
 }

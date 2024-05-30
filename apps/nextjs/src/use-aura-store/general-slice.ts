@@ -8,7 +8,7 @@ export const createGeneralSlice: StateCreator<
   [],
   GeneralSlice
 > = (set) => ({
-  isEditorView: false,
+  isEditorView: true,
   updateIsEditorView: (fn) =>
     set((prev) => ({ isEditorView: fn(prev.isEditorView) })),
 });

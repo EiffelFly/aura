@@ -1,6 +1,12 @@
 "use client";
 
-import { headingsPlugin, MDXEditor, MDXEditorMethods } from "@mdxeditor/editor";
+import type { MDXEditorMethods } from "@mdxeditor/editor";
+import {
+  headingsPlugin,
+  listsPlugin,
+  markdownShortcutPlugin,
+  MDXEditor,
+} from "@mdxeditor/editor";
 
 interface EditorProps {
   markdown: string;
@@ -13,12 +19,15 @@ interface EditorProps {
  */
 const Editor = ({ markdown, editorRef }: EditorProps) => {
   return (
-    <MDXEditor
-      onChange={(e) => console.log(e)}
-      ref={editorRef}
-      markdown={markdown}
-      plugins={[headingsPlugin()]}
-    />
+    <article>
+      <MDXEditor
+        onChange={(e) => console.log(e)}
+        ref={editorRef}
+        markdown={markdown}
+        plugins={[headingsPlugin(), listsPlugin(), markdownShortcutPlugin()]}
+        contentEditableClassName="prose-xl font-mono prose-neutral dark:prose-invert !max-w-none focus:!border-0 focus:!outline-none focus:ring-0"
+      />
+    </article>
   );
 };
 

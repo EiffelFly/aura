@@ -38,6 +38,7 @@
     "@aura/prettier-config": "workspace:*",
     "@aura/tailwind-config": "workspace:*",
     "@aura/tsconfig": "workspace:*",
+    "@tailwindcss/typography": "^0.5.13",
     "@types/node": "^20.12.9",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.3.0",
