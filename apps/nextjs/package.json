@@ -19,6 +19,7 @@
     "@aura/db": "workspace:*",
     "@aura/ui": "workspace:*",
     "@aura/validators": "workspace:*",
+    "@mdxeditor/editor": "^3.4.0",
     "@t3-oss/env-nextjs": "^0.10.1",
     "@tanstack/react-query": "^5.35.5",
     "@trpc/client": "11.0.0-rc.364",
@@ -29,7 +30,8 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "superjson": "2.2.1",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@aura/eslint-config": "workspace:*",
