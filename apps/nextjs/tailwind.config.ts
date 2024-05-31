@@ -28,6 +28,16 @@ export default {
               content: '"-"',
               marginRight: "1rem",
             },
+
+            // "h1 > span::before": {
+            //   content: "'#'",
+            //   marginRight: "0.1rem",
+            // },
+
+            // "h2 > span::before": {
+            //   content: "'##'",
+            //   marginRight: "0.1rem",
+            // },
           },
         },
       },

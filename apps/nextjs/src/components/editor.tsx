@@ -25,7 +25,7 @@ const Editor = ({ markdown, editorRef }: EditorProps) => {
         ref={editorRef}
         markdown={markdown}
         plugins={[headingsPlugin(), listsPlugin(), markdownShortcutPlugin()]}
-        contentEditableClassName="prose-xl font-mono prose-neutral dark:prose-invert !max-w-none focus:!border-0 focus:!outline-none focus:ring-0"
+        contentEditableClassName="prose-xl h-full font-mono prose-neutral dark:prose-invert !max-w-none focus:!border-0 focus:!outline-none focus:ring-0"
       />
     </article>
   );
