@@ -6,8 +6,8 @@ export const WorkspaceSwitch = () => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button className="flex flex-row items-center gap-x-3 rounded px-1 py-0.5 hover:bg-muted">
-          <span className="font-sans font-semibold text-secondary">
+        <button className="flex flex-row items-center gap-x-3 rounded px-2 py-0.5 hover:bg-muted">
+          <span className="font-sans text-lg font-semibold text-secondary">
             Your workspace
           </span>
           <ChevronDownIcon className="h-3 w-3 stroke-secondary" />

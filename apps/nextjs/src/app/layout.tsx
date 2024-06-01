@@ -10,6 +10,7 @@ import { TRPCReactProvider } from "~/trpc/react";
 
 import "~/app/globals.css";
 
+import { Container } from "~/components/container";
 import { env } from "~/env";
 
 export const metadata: Metadata = {
@@ -51,7 +52,9 @@ export default function RootLayout(props: { children: React.ReactNode }) {
         )}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <TRPCReactProvider>{props.children}</TRPCReactProvider>
+          <TRPCReactProvider>
+            <Container>{props.children}</Container>
+          </TRPCReactProvider>
           <Toaster />
         </ThemeProvider>
       </body>
