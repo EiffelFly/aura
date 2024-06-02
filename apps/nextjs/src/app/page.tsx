@@ -16,7 +16,7 @@ export default function HomePage() {
       }}
       className="h-full w-full"
     >
-      <div className="mx-auto h-full max-w-[960px] py-[150px]">
+      <div className="mx-auto h-full max-w-[var(--centralized-content-width)] py-[150px]">
         <Editor editorRef={ref} markdown="## test" />
       </div>
     </div>
