@@ -6,5 +6,5 @@ import { useKeyboard } from "~/hook/use-keyborad";
 
 export const Container = ({ children }: { children: React.ReactNode }) => {
   useKeyboard();
-  return <main className="h-screen">{children}</main>;
+  return <main className="h-screen w-screen">{children}</main>;
 };
