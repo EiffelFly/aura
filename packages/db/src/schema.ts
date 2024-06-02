@@ -1,5 +1,6 @@
 import { relations, sql } from "drizzle-orm";
 import {
+  boolean,
   integer,
   pgTable,
   primaryKey,
@@ -260,6 +261,7 @@ export const User = pgTable("user", {
     mode: "date",
     withTimezone: true,
   }),
+  onboarded: boolean("onboarded").default(false),
 });
 
 export const userRelations = relations(User, ({ many }) => ({
