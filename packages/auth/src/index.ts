@@ -12,3 +12,5 @@ const {
 } = NextAuth(authConfig);
 
 export { GET, POST, auth, signIn, signOut };
+
+export { signOut as SignOutClient } from "next-auth/react";

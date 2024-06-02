@@ -1,3 +1,1 @@
-export { GET, POST } from "@aura/auth";
-
-export const runtime = "edge";
+export { GET, POST, signOut } from "@aura/auth";

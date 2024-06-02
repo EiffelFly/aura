@@ -19,7 +19,13 @@ export const authConfig = {
     accountsTable: Account,
     sessionsTable: Session,
   }),
-  providers: [Google],
+  debug: true,
+  providers: [
+    Google({
+      clientId: process.env.AUTH_GOOGLE_CLIENT_ID,
+      clientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET,
+    }),
+  ],
   callbacks: {
     session: (opts) => {
       if (!("user" in opts)) throw "unreachable with session strategy";

@@ -1,11 +1,14 @@
-export { auth as middleware } from "@aura/auth";
+import { NextResponse } from "next/server";
 
-// Or like this if you need to do something here.
-// export default auth((req) => {
-//   console.log(req.auth) //  { session: { user: { ... } } }
-// })
+import { auth } from "@aura/auth";
+
+export default auth((req) => {
+  if (!req.auth) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
+});
 
 // Read more: https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!api|login|_next/static|_next/image|favicon.ico).*)"],
 };

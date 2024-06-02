@@ -10,5 +10,4 @@ export default {
   schema: "./src/schema.ts",
   dialect: "postgresql",
   dbCredentials: { url: nonPoolingUrl },
-  tablesFilter: ["aura"],
 } satisfies Config;

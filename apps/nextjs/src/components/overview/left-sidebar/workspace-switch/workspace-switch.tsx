@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 
+import { SignOutClient } from "@aura/auth";
 import { Popover, PopoverContent, PopoverTrigger } from "@aura/ui/popover";
 import { Separator } from "@aura/ui/separator";
 
@@ -34,7 +35,8 @@ export const WorkspaceSwitch = () => {
             }}
           />
           <Separator />
-          <ActionButton title="logout" onClick={() => {}} />
+
+          <ActionButton title="logout" onClick={() => SignOutClient()} />
         </div>
       </PopoverContent>
     </Popover>
