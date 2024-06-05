@@ -35,6 +35,7 @@ export const CreateWorkspaceSchema = createInsertSchema(Workspace, {
   id: true,
   created_at: true,
   updated_at: true,
+  owner_id: true,
 });
 
 export const Work = pgTable("work", {
@@ -71,6 +72,7 @@ export const CreateWorkSchema = createInsertSchema(Work, {
   id: true,
   created_at: true,
   updated_at: true,
+  owner_id: true,
 });
 
 export const Dialogue = pgTable("dialogue", {
@@ -116,6 +118,7 @@ export const CreateDialogueSchema = createInsertSchema(Dialogue, {
   id: true,
   created_at: true,
   updated_at: true,
+  owner_id: true,
 });
 
 export const Character = pgTable("character", {
@@ -156,6 +159,7 @@ export const CreateCharacterSchema = createInsertSchema(Character, {
   id: true,
   created_at: true,
   updated_at: true,
+  owner_id: true,
 });
 
 export const WorkCharacter = pgTable(
@@ -189,6 +193,7 @@ export const createWorkCharacterSchema = createInsertSchema(WorkCharacter, {
 }).omit({
   created_at: true,
   updated_at: true,
+  owner_id: true,
 });
 
 export const WorkCharacterRelation = relations(WorkCharacter, ({ one }) => ({
@@ -233,6 +238,7 @@ export const createCharacterDialogueSchema = createInsertSchema(
 ).omit({
   created_at: true,
   updated_at: true,
+  owner_id: true,
 });
 
 export const CharacterDialogueRelation = relations(

@@ -13,4 +13,8 @@ const {
 
 export { GET, POST, auth, signIn, signOut };
 
-export { signOut as SignOutClient, SessionProvider } from "next-auth/react";
+export {
+  signOut as SignOutClient,
+  SessionProvider,
+  useSession,
+} from "next-auth/react";

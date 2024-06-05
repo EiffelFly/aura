@@ -55,7 +55,9 @@ export const characterDialogueRouter = {
   create: protectedProcedure
     .input(createCharacterDialogueSchema)
     .mutation(({ ctx, input }) => {
-      return ctx.db.insert(CharacterDialogue).values(input);
+      return ctx.db
+        .insert(CharacterDialogue)
+        .values({ ...input, owner_id: ctx.session.user.id });
     }),
   delete: protectedProcedure
     .input(z.object({ character_id: z.string(), dialogue_id: z.string() }))

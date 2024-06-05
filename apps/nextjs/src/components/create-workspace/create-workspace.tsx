@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { EraserIcon, LayersIcon } from "@radix-ui/react-icons";
 import { z } from "zod";
 
@@ -20,7 +21,9 @@ const createWorkspaceSchema = z.object({
   name: z.string(),
 });
 
-export const CreateWorkspace = ({ userId }: { userId: string }) => {
+export const CreateWorkspace = () => {
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof createWorkspaceSchema>>({
     resolver: zodResolver(createWorkspaceSchema),
     defaultValues: {
@@ -33,6 +36,7 @@ export const CreateWorkspace = ({ userId }: { userId: string }) => {
     onSuccess: async () => {
       form.reset();
       await utils.workspace.invalidate();
+      router.push("/");
     },
     onError: () => {
       toast.error("Failed to create workspace");
@@ -41,7 +45,6 @@ export const CreateWorkspace = ({ userId }: { userId: string }) => {
 
   function onSubmit(values: z.infer<typeof createWorkspaceSchema>) {
     createWorkspace.mutate({
-      owner_id: userId,
       name: values.name,
     });
   }
