@@ -12,7 +12,7 @@ import { protectedProcedure } from "../trpc";
 export const dialogueRouter = {
   all: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.Dialogue.findMany({
-      where: eq(Dialogue.ownerId, ctx.session.user.id),
+      where: eq(Dialogue.owner_id, ctx.session.user.id),
       orderBy: desc(Dialogue.id),
       limit: 100,
     });
@@ -23,20 +23,23 @@ export const dialogueRouter = {
       return ctx.db.query.Dialogue.findFirst({
         where: and(
           eq(Dialogue.id, input.id),
-          eq(Dialogue.ownerId, ctx.session.user.id),
+          eq(Dialogue.owner_id, ctx.session.user.id),
         ),
       });
     }),
   create: protectedProcedure
     .input(CreateDialogueSchema)
     .mutation(({ ctx, input }) => {
-      return ctx.db.insert(Dialogue).values(input);
+      return ctx.db.insert(Dialogue).values({
+        ...input,
+        owner_id: ctx.session.user.id,
+      });
     }),
   delete: protectedProcedure.input(z.string()).mutation(({ ctx, input }) => {
     return ctx.db
       .delete(Dialogue)
       .where(
-        and(eq(Dialogue.id, input), eq(Dialogue.ownerId, ctx.session.user.id)),
+        and(eq(Dialogue.id, input), eq(Dialogue.owner_id, ctx.session.user.id)),
       );
   }),
 } satisfies TRPCRouterRecord;

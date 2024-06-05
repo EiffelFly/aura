@@ -9,7 +9,7 @@ import { protectedProcedure } from "../trpc";
 export const workRouter = {
   all: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.Work.findMany({
-      where: eq(Work.ownerId, ctx.session.user.id),
+      where: eq(Work.owner_id, ctx.session.user.id),
       orderBy: desc(Work.id),
       limit: 100,
     });
@@ -20,18 +20,21 @@ export const workRouter = {
       return ctx.db.query.Work.findFirst({
         where: and(
           eq(Work.id, input.id),
-          eq(Work.ownerId, ctx.session.user.id),
+          eq(Work.owner_id, ctx.session.user.id),
         ),
       });
     }),
   create: protectedProcedure
     .input(CreateWorkSchema)
     .mutation(({ ctx, input }) => {
-      return ctx.db.insert(Work).values(input);
+      return ctx.db.insert(Work).values({
+        ...input,
+        owner_id: ctx.session.user.id,
+      });
     }),
   delete: protectedProcedure.input(z.string()).mutation(({ ctx, input }) => {
     return ctx.db
       .delete(Work)
-      .where(and(eq(Work.id, input), eq(Work.ownerId, ctx.session.user.id)));
+      .where(and(eq(Work.id, input), eq(Work.owner_id, ctx.session.user.id)));
   }),
 } satisfies TRPCRouterRecord;

@@ -11,7 +11,7 @@ import { protectedProcedure } from "../trpc";
 export const characterRouter = {
   all: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.Character.findMany({
-      where: eq(Character.ownerId, ctx.session.user.id),
+      where: eq(Character.owner_id, ctx.session.user.id),
       orderBy: desc(Character.id),
       limit: 100,
     });
@@ -22,14 +22,17 @@ export const characterRouter = {
       return ctx.db.query.Character.findFirst({
         where: and(
           eq(Character.id, input.id),
-          eq(Character.ownerId, ctx.session.user.id),
+          eq(Character.owner_id, ctx.session.user.id),
         ),
       });
     }),
   create: protectedProcedure
     .input(CreateDialogueSchema)
     .mutation(({ ctx, input }) => {
-      return ctx.db.insert(Character).values(input);
+      return ctx.db.insert(Character).values({
+        ...input,
+        owner_id: ctx.session.user.id,
+      });
     }),
   delete: protectedProcedure.input(z.string()).mutation(({ ctx, input }) => {
     return ctx.db
@@ -37,7 +40,7 @@ export const characterRouter = {
       .where(
         and(
           eq(Character.id, input),
-          eq(Character.ownerId, ctx.session.user.id),
+          eq(Character.owner_id, ctx.session.user.id),
         ),
       );
   }),

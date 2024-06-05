@@ -12,53 +12,52 @@ import {
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const Workspace = pgTable("post", {
+export const Workspace = pgTable("workspace", {
   id: uuid("id").notNull().primaryKey().defaultRandom(),
   name: varchar("name", { length: 256 }).notNull(),
-  createdAt: timestamp("d").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt", {
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at", {
     mode: "date",
     withTimezone: true,
   }).$onUpdateFn(() => sql`now()`),
-  ownerId: uuid("ownerId")
+  owner_id: uuid("owner_id")
     .notNull()
     .references(() => User.id),
 });
 
-export const workspaceRelations = relations(Workspace, ({ one }) => ({
-  owner: one(User, { fields: [Workspace.ownerId], references: [User.id] }),
+export const workspaceRelation = relations(Workspace, ({ one }) => ({
+  owner: one(User, { fields: [Workspace.owner_id], references: [User.id] }),
 }));
 
 export const CreateWorkspaceSchema = createInsertSchema(Workspace, {
   name: z.string().max(256),
-  ownerId: z.string(),
 }).omit({
   id: true,
-  createdAt: true,
-  updatedAt: true,
+  created_at: true,
+  updated_at: true,
 });
 
 export const Work = pgTable("work", {
   id: uuid("id").notNull().primaryKey().defaultRandom(),
   name: varchar("name", { length: 256 }).notNull(),
   content: text("content"),
-  ownerId: uuid("ownerId")
+  owner_id: uuid("owner_id")
     .notNull()
     .references(() => User.id),
-  workspaceId: uuid("workspaceId")
+  workspace_id: uuid("workspace_id")
     .notNull()
     .references(() => Workspace.id),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt", {
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at", {
     mode: "date",
     withTimezone: true,
   }).$onUpdateFn(() => sql`now()`),
 });
 
-export const workRelations = relations(Work, ({ one, many }) => ({
-  owner: one(User, { fields: [Work.ownerId], references: [User.id] }),
+export const workRelation = relations(Work, ({ one, many }) => ({
+  owner: one(User, { fields: [Work.owner_id], references: [User.id] }),
   workspace: one(Workspace, {
-    fields: [Work.workspaceId],
+    fields: [Work.workspace_id],
     references: [Workspace.id],
   }),
   workCharacter: many(WorkCharacter),
@@ -67,58 +66,56 @@ export const workRelations = relations(Work, ({ one, many }) => ({
 export const CreateWorkSchema = createInsertSchema(Work, {
   name: z.string().max(256),
   content: z.string().optional(),
-  ownerId: z.string(),
-  workspaceId: z.string(),
+  workspace_id: z.string(),
 }).omit({
   id: true,
-  createdAt: true,
-  updatedAt: true,
+  created_at: true,
+  updated_at: true,
 });
 
 export const Dialogue = pgTable("dialogue", {
   id: uuid("id").notNull().primaryKey().defaultRandom(),
   name: varchar("name", { length: 256 }).notNull(),
   content: text("content"),
-  startAt: integer("startAt").notNull(),
-  endAt: integer("endAt").notNull(),
-  ownerId: uuid("ownerId")
+  start_at: integer("start_at").notNull(),
+  end_at: integer("end_at").notNull(),
+  owner_id: uuid("owner_id")
     .notNull()
     .references(() => User.id),
-  workspaceId: uuid("workspaceId")
+  workspace_id: uuid("workspace_id")
     .notNull()
     .references(() => Workspace.id),
-  workId: uuid("workId")
+  work_id: uuid("work_id")
     .notNull()
     .references(() => Work.id),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt", {
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at", {
     mode: "date",
     withTimezone: true,
   }).$onUpdateFn(() => sql`now()`),
 });
 
-export const dialogueRelations = relations(Dialogue, ({ one, many }) => ({
-  owner: one(User, { fields: [Dialogue.ownerId], references: [User.id] }),
+export const dialogueRelation = relations(Dialogue, ({ one, many }) => ({
+  owner: one(User, { fields: [Dialogue.owner_id], references: [User.id] }),
   workspace: one(Workspace, {
-    fields: [Dialogue.workspaceId],
+    fields: [Dialogue.workspace_id],
     references: [Workspace.id],
   }),
-  work: one(Work, { fields: [Dialogue.workId], references: [Work.id] }),
+  work: one(Work, { fields: [Dialogue.work_id], references: [Work.id] }),
   characterDialogue: many(CharacterDialogue),
 }));
 
 export const CreateDialogueSchema = createInsertSchema(Dialogue, {
   name: z.string().max(256),
   content: z.string().optional(),
-  startAt: z.number(),
-  endAt: z.number(),
-  ownerId: z.string(),
-  workspaceId: z.string(),
-  workId: z.string(),
+  start_at: z.number(),
+  end_at: z.number(),
+  workspace_id: z.string(),
+  work_id: z.string(),
 }).omit({
   id: true,
-  createdAt: true,
-  updatedAt: true,
+  created_at: true,
+  updated_at: true,
 });
 
 export const Character = pgTable("character", {
@@ -126,23 +123,23 @@ export const Character = pgTable("character", {
   name: varchar("name", { length: 256 }).notNull(),
   image: text("image"),
   description: text("description"),
-  ownerId: uuid("ownerId")
+  owner_id: uuid("owner_id")
     .notNull()
     .references(() => User.id),
-  workspaceId: uuid("workspaceId")
+  workspace_id: uuid("workspace_id")
     .notNull()
     .references(() => Workspace.id),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt", {
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at", {
     mode: "date",
     withTimezone: true,
   }).$onUpdateFn(() => sql`now()`),
 });
 
-export const characterRelations = relations(Character, ({ one, many }) => ({
-  owner: one(User, { fields: [Character.ownerId], references: [User.id] }),
+export const characterRelation = relations(Character, ({ one, many }) => ({
+  owner: one(User, { fields: [Character.owner_id], references: [User.id] }),
   workspace: one(Workspace, {
-    fields: [Character.workspaceId],
+    fields: [Character.workspace_id],
     references: [Workspace.id],
   }),
   workCharacter: many(WorkCharacter),
@@ -153,51 +150,51 @@ export const CreateCharacterSchema = createInsertSchema(Character, {
   name: z.string().max(256),
   image: z.string().optional(),
   description: z.string().optional(),
-  ownerId: z.string(),
-  workspaceId: z.string(),
+  owner_id: z.string(),
+  workspace_id: z.string(),
 }).omit({
   id: true,
-  createdAt: true,
-  updatedAt: true,
+  created_at: true,
+  updated_at: true,
 });
 
 export const WorkCharacter = pgTable(
   "work_character",
   {
-    workId: uuid("workId")
+    work_id: uuid("work_id")
       .notNull()
       .references(() => Work.id),
-    characterId: uuid("characterId")
+    character_id: uuid("character_id")
       .notNull()
       .references(() => Character.id),
-    ownerId: uuid("ownerId")
+    owner_id: uuid("owner_id")
       .notNull()
       .references(() => User.id),
-    createdAt: timestamp("createdAt").defaultNow().notNull(),
-    updatedAt: timestamp("updatedAt", {
+    created_at: timestamp("created_at").defaultNow().notNull(),
+    updated_at: timestamp("updated_at", {
       mode: "date",
       withTimezone: true,
     }).$onUpdateFn(() => sql`now()`),
   },
   (workCharacter) => ({
     pk: primaryKey({
-      columns: [workCharacter.workId, workCharacter.characterId],
+      columns: [workCharacter.work_id, workCharacter.character_id],
     }),
   }),
 );
 
 export const createWorkCharacterSchema = createInsertSchema(WorkCharacter, {
-  workId: z.string(),
-  characterId: z.string(),
+  work_id: z.string(),
+  character_id: z.string(),
 }).omit({
-  createdAt: true,
-  updatedAt: true,
+  created_at: true,
+  updated_at: true,
 });
 
-export const WorkCharacterRelations = relations(WorkCharacter, ({ one }) => ({
-  work: one(Work, { fields: [WorkCharacter.workId], references: [Work.id] }),
+export const WorkCharacterRelation = relations(WorkCharacter, ({ one }) => ({
+  work: one(Work, { fields: [WorkCharacter.work_id], references: [Work.id] }),
   character: one(Character, {
-    fields: [WorkCharacter.characterId],
+    fields: [WorkCharacter.character_id],
     references: [Character.id],
   }),
 }));
@@ -205,24 +202,24 @@ export const WorkCharacterRelations = relations(WorkCharacter, ({ one }) => ({
 export const CharacterDialogue = pgTable(
   "character_dialogue",
   {
-    characterId: uuid("characterId")
+    character_id: uuid("character_id")
       .notNull()
       .references(() => Character.id),
-    dialogueId: uuid("dialogueId")
+    dialogue_id: uuid("dialogue_id")
       .notNull()
       .references(() => Dialogue.id),
-    ownerId: uuid("ownerId")
+    owner_id: uuid("owner_id")
       .notNull()
       .references(() => User.id),
-    createdAt: timestamp("createdAt").defaultNow().notNull(),
-    updatedAt: timestamp("updatedAt", {
+    created_at: timestamp("created_at").defaultNow().notNull(),
+    updated_at: timestamp("updated_at", {
       mode: "date",
       withTimezone: true,
     }).$onUpdateFn(() => sql`now()`),
   },
   (characterDialogue) => ({
     pk: primaryKey({
-      columns: [characterDialogue.characterId, characterDialogue.dialogueId],
+      columns: [characterDialogue.character_id, characterDialogue.dialogue_id],
     }),
   }),
 );
@@ -230,23 +227,23 @@ export const CharacterDialogue = pgTable(
 export const createCharacterDialogueSchema = createInsertSchema(
   CharacterDialogue,
   {
-    characterId: z.string(),
-    dialogueId: z.string(),
+    character_id: z.string(),
+    dialogue_id: z.string(),
   },
 ).omit({
-  createdAt: true,
-  updatedAt: true,
+  created_at: true,
+  updated_at: true,
 });
 
-export const CharacterDialogueRelations = relations(
+export const CharacterDialogueRelation = relations(
   CharacterDialogue,
   ({ one }) => ({
     character: one(Character, {
-      fields: [CharacterDialogue.characterId],
+      fields: [CharacterDialogue.character_id],
       references: [Character.id],
     }),
     dialogue: one(Dialogue, {
-      fields: [CharacterDialogue.dialogueId],
+      fields: [CharacterDialogue.dialogue_id],
       references: [Dialogue.id],
     }),
   }),
@@ -264,7 +261,7 @@ export const User = pgTable("user", {
   onboarded: boolean("onboarded").default(false),
 });
 
-export const userRelations = relations(User, ({ many }) => ({
+export const userRelation = relations(User, ({ many }) => ({
   workspaces: many(Workspace),
   accounts: many(Account),
 }));
@@ -295,7 +292,7 @@ export const Account = pgTable(
   }),
 );
 
-export const AccountRelations = relations(Account, ({ one }) => ({
+export const AccountRelation = relations(Account, ({ one }) => ({
   user: one(User, { fields: [Account.userId], references: [User.id] }),
 }));
 
@@ -310,6 +307,6 @@ export const Session = pgTable("session", {
   }).notNull(),
 });
 
-export const SessionRelations = relations(Session, ({ one }) => ({
+export const SessionRelation = relations(Session, ({ one }) => ({
   user: one(User, { fields: [Session.userId], references: [User.id] }),
 }));

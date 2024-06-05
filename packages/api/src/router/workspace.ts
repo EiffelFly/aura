@@ -9,7 +9,7 @@ import { protectedProcedure } from "../trpc";
 export const workspaceRouter = {
   all: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.Workspace.findMany({
-      where: eq(Workspace.ownerId, ctx.session.user.id),
+      where: eq(Workspace.owner_id, ctx.session.user.id),
       orderBy: desc(Workspace.id),
       limit: 100,
     });
@@ -20,14 +20,17 @@ export const workspaceRouter = {
       return ctx.db.query.Workspace.findFirst({
         where: and(
           eq(Workspace.id, input.id),
-          eq(Workspace.ownerId, ctx.session.user.id),
+          eq(Workspace.owner_id, ctx.session.user.id),
         ),
       });
     }),
   create: protectedProcedure
     .input(CreateWorkspaceSchema)
     .mutation(({ ctx, input }) => {
-      return ctx.db.insert(Workspace).values(input);
+      return ctx.db.insert(Workspace).values({
+        ...input,
+        owner_id: ctx.session.user.id,
+      });
     }),
   delete: protectedProcedure.input(z.string()).mutation(({ ctx, input }) => {
     return ctx.db
@@ -35,7 +38,7 @@ export const workspaceRouter = {
       .where(
         and(
           eq(Workspace.id, input),
-          eq(Workspace.ownerId, ctx.session.user.id),
+          eq(Workspace.owner_id, ctx.session.user.id),
         ),
       );
   }),

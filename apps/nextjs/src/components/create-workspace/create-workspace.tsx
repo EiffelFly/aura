@@ -12,12 +12,15 @@ import {
   useForm,
   zodResolver,
 } from "@aura/ui/form";
+import { toast } from "@aura/ui/toast";
+
+import { api } from "~/trpc/react";
 
 const createWorkspaceSchema = z.object({
   name: z.string(),
 });
 
-export const CreateWorkspace = () => {
+export const CreateWorkspace = ({ userId }: { userId: string }) => {
   const form = useForm<z.infer<typeof createWorkspaceSchema>>({
     resolver: zodResolver(createWorkspaceSchema),
     defaultValues: {
@@ -25,8 +28,22 @@ export const CreateWorkspace = () => {
     },
   });
 
+  const utils = api.useUtils();
+  const createWorkspace = api.workspace.create.useMutation({
+    onSuccess: async () => {
+      form.reset();
+      await utils.workspace.invalidate();
+    },
+    onError: () => {
+      toast.error("Failed to create workspace");
+    },
+  });
+
   function onSubmit(values: z.infer<typeof createWorkspaceSchema>) {
-    console.log(values);
+    createWorkspace.mutate({
+      owner_id: userId,
+      name: values.name,
+    });
   }
 
   return (

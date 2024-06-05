@@ -14,41 +14,41 @@ import { protectedProcedure } from "../trpc";
 export const characterDialogueRouter = {
   all: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.CharacterDialogue.findMany({
-      where: eq(CharacterDialogue.ownerId, ctx.session.user.id),
+      where: eq(CharacterDialogue.owner_id, ctx.session.user.id),
       orderBy: desc(Character.id),
       limit: 100,
     });
   }),
-  byCharacterId: protectedProcedure
-    .input(z.object({ characterId: z.string() }))
+  bycharacter_id: protectedProcedure
+    .input(z.object({ character_id: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.CharacterDialogue.findMany({
         where: and(
-          eq(Character.id, input.characterId),
-          eq(CharacterDialogue.ownerId, ctx.session.user.id),
+          eq(Character.id, input.character_id),
+          eq(CharacterDialogue.owner_id, ctx.session.user.id),
         ),
         limit: 100,
       });
     }),
-  byDialogueId: protectedProcedure
-    .input(z.object({ dialogueId: z.string() }))
+  bydialogue_id: protectedProcedure
+    .input(z.object({ dialogue_id: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.CharacterDialogue.findMany({
         where: and(
-          eq(Dialogue.id, input.dialogueId),
-          eq(CharacterDialogue.ownerId, ctx.session.user.id),
+          eq(Dialogue.id, input.dialogue_id),
+          eq(CharacterDialogue.owner_id, ctx.session.user.id),
         ),
         limit: 100,
       });
     }),
-  byCharacterAndDialogueId: protectedProcedure
-    .input(z.object({ characterId: z.string(), dialogueId: z.string() }))
+  byCharacterAnddialogue_id: protectedProcedure
+    .input(z.object({ character_id: z.string(), dialogue_id: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.CharacterDialogue.findFirst({
         where: and(
-          eq(Character.id, input.characterId),
-          eq(Dialogue.id, input.dialogueId),
-          eq(CharacterDialogue.ownerId, ctx.session.user.id),
+          eq(Character.id, input.character_id),
+          eq(Dialogue.id, input.dialogue_id),
+          eq(CharacterDialogue.owner_id, ctx.session.user.id),
         ),
       });
     }),
@@ -58,15 +58,15 @@ export const characterDialogueRouter = {
       return ctx.db.insert(CharacterDialogue).values(input);
     }),
   delete: protectedProcedure
-    .input(z.object({ characterId: z.string(), dialogueId: z.string() }))
+    .input(z.object({ character_id: z.string(), dialogue_id: z.string() }))
     .mutation(({ ctx, input }) => {
       return ctx.db
         .delete(CharacterDialogue)
         .where(
           and(
-            eq(Character.id, input.characterId),
-            eq(Dialogue.id, input.dialogueId),
-            eq(CharacterDialogue.ownerId, ctx.session.user.id),
+            eq(Character.id, input.character_id),
+            eq(Dialogue.id, input.dialogue_id),
+            eq(CharacterDialogue.owner_id, ctx.session.user.id),
           ),
         );
     }),
