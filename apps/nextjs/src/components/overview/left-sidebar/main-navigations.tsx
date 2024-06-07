@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import { DialogueIcon } from "@aura/ui/icons/DialogueIcon";
 import { WorkIcon } from "@aura/ui/icons/WorkIcon";
@@ -30,6 +30,8 @@ export const NavigationButton = ({
 };
 
 export const MainNavigations = () => {
+  const pathname = usePathname();
+
   return (
     <div className="flex w-full flex-col gap-y-2">
       <NavigationButton

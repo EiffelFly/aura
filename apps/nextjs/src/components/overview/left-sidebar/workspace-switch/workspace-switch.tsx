@@ -1,15 +1,20 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ChevronDownIcon } from "@radix-ui/react-icons";
+import { CheckIcon, ChevronDownIcon } from "@radix-ui/react-icons";
 
 import { SignOutClient, useSession } from "@aura/auth";
 import { Popover, PopoverContent, PopoverTrigger } from "@aura/ui/popover";
 import { Separator } from "@aura/ui/separator";
+import { Skeleton } from "@aura/ui/skeleton";
 
 import { api } from "~/trpc/react";
 
-export const WorkspaceSwitch = () => {
+export const WorkspaceSwitch = ({
+  current_workspace_id,
+}: {
+  current_workspace_id: string;
+}) => {
   const router = useRouter();
   const session = useSession();
   const workspaces = api.workspace.all.useQuery();
@@ -19,13 +24,19 @@ export const WorkspaceSwitch = () => {
       <PopoverTrigger asChild>
         <button className="flex flex-row items-center gap-x-3 rounded px-2 py-0.5 hover:bg-muted">
           <span className="font-sans text-lg font-semibold text-secondary">
-            Your workspace
+            {workspaces.isSuccess ? (
+              workspaces.data.find(
+                (workspace) => workspace.id === current_workspace_id,
+              )?.name
+            ) : (
+              <Skeleton className="h-4 w-20 rounded" />
+            )}
           </span>
           <ChevronDownIcon className="h-3 w-3 stroke-secondary" />
         </button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-[320px] border-none bg-muted p-0"
+        className="w-[320px] rounded border-none bg-muted p-0"
         align="start"
       >
         <div className="flex flex-col">
@@ -35,10 +46,13 @@ export const WorkspaceSwitch = () => {
           <div className="flex flex-col p-2">
             {workspaces.isSuccess
               ? workspaces.data.map((workspace) => (
-                  <div className="flex w-full flex-row rounded px-2 py-1 hover:bg-border">
+                  <div className="flex w-full flex-row justify-between rounded px-2 py-1 hover:bg-border">
                     <p className="font-sans  text-base font-medium text-secondary">
                       {workspace.name}
                     </p>
+                    {current_workspace_id === workspace.id ? (
+                      <CheckIcon className="h-5 w-5 stroke-secondary" />
+                    ) : null}
                   </div>
                 ))
               : null}
