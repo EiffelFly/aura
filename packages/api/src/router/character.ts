@@ -29,10 +29,13 @@ export const characterRouter = {
   create: protectedProcedure
     .input(CreateDialogueSchema)
     .mutation(({ ctx, input }) => {
-      return ctx.db.insert(Character).values({
-        ...input,
-        owner_id: ctx.session.user.id,
-      });
+      return ctx.db
+        .insert(Character)
+        .values({
+          ...input,
+          owner_id: ctx.session.user.id,
+        })
+        .returning();
     }),
   delete: protectedProcedure.input(z.string()).mutation(({ ctx, input }) => {
     return ctx.db

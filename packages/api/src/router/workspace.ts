@@ -27,10 +27,13 @@ export const workspaceRouter = {
   create: protectedProcedure
     .input(CreateWorkspaceSchema)
     .mutation(({ ctx, input }) => {
-      return ctx.db.insert(Workspace).values({
-        ...input,
-        owner_id: ctx.session.user.id,
-      });
+      return ctx.db
+        .insert(Workspace)
+        .values({
+          ...input,
+          owner_id: ctx.session.user.id,
+        })
+        .returning();
     }),
   delete: protectedProcedure.input(z.string()).mutation(({ ctx, input }) => {
     return ctx.db

@@ -55,10 +55,13 @@ export const workCharacterRouter = {
   create: protectedProcedure
     .input(createWorkCharacterSchema)
     .mutation(({ ctx, input }) => {
-      return ctx.db.insert(WorkCharacter).values({
-        ...input,
-        owner_id: ctx.session.user.id,
-      });
+      return ctx.db
+        .insert(WorkCharacter)
+        .values({
+          ...input,
+          owner_id: ctx.session.user.id,
+        })
+        .returning();
     }),
   delete: protectedProcedure
     .input(z.object({ work_id: z.string(), character_id: z.string() }))
