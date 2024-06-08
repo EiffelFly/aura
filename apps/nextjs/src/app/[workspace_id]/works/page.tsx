@@ -1,13 +1,12 @@
-import * as React from "react";
+"use client";
 
 import { LeftSidebar } from "~/components/overview";
 import { Topbar } from "~/components/overview/topbar/topbar";
+import { WorkList } from "~/components/work/work-list";
 
-export default function OverviewLayout({
-  children,
+export default function WorkOverviewPage({
   params,
 }: {
-  children: React.ReactNode;
   params: { workspace_id: string };
 }) {
   return (
@@ -15,7 +14,9 @@ export default function OverviewLayout({
       <LeftSidebar current_workspace_id={params.workspace_id} />
       <div className="flex flex-1 flex-col">
         <Topbar />
-        {children}
+        <div className="w-full p-4">
+          <WorkList />
+        </div>
       </div>
     </div>
   );
