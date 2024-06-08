@@ -5,7 +5,11 @@ import { and, desc, eq } from "@aura/db";
 
 import "@aura/db/schema";
 
-import { CreateDialogueSchema, Dialogue } from "@aura/db/schema";
+import {
+  CreateDialogueSchema,
+  Dialogue,
+  UpdateDialogueSchema,
+} from "@aura/db/schema";
 
 import { protectedProcedure } from "../trpc";
 
@@ -36,6 +40,22 @@ export const dialogueRouter = {
           ...input,
           owner_id: ctx.session.user.id,
         })
+        .returning();
+    }),
+  update: protectedProcedure
+    .input(UpdateDialogueSchema)
+    .mutation(({ ctx, input }) => {
+      const { dialogue_id, ...data } = input;
+
+      return ctx.db
+        .update(Dialogue)
+        .set(data)
+        .where(
+          and(
+            eq(Dialogue.id, dialogue_id),
+            eq(Dialogue.owner_id, ctx.session.user.id),
+          ),
+        )
         .returning();
     }),
   delete: protectedProcedure.input(z.string()).mutation(({ ctx, input }) => {

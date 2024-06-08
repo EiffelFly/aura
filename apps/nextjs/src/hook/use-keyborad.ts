@@ -12,15 +12,15 @@ export const useKeyboard = () => {
 
         const pathNameArray = pathname.split("/");
 
-        console.log(pathname, pathNameArray);
-
-        if (pathNameArray.length === 2 && pathNameArray[1]) {
-          router.push(`${pathname}/overview/works`);
-        } else if (
-          pathNameArray.length === 3 &&
-          pathname.split("/")[2] === "overview"
+        if (
+          pathNameArray.length === 4 &&
+          pathNameArray[1] &&
+          pathNameArray[2] === "works" &&
+          pathNameArray[3]
         ) {
-          router.push(`/${pathNameArray[1]}`);
+          console.log("yoyo");
+          router.push(`/${pathNameArray[1]}/works`);
+          return;
         }
       }
     };

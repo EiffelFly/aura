@@ -2,7 +2,7 @@ import { TRPCRouterRecord } from "@trpc/server";
 import { z } from "zod";
 
 import { and, desc, eq } from "@aura/db";
-import { CreateWorkSchema, Work } from "@aura/db/schema";
+import { CreateWorkSchema, UpdateWorkSchema, Work } from "@aura/db/schema";
 
 import { protectedProcedure } from "../trpc";
 
@@ -33,6 +33,21 @@ export const workRouter = {
           ...input,
           owner_id: ctx.session.user.id,
         })
+        .returning();
+    }),
+  update: protectedProcedure
+    .input(UpdateWorkSchema)
+    .mutation(({ ctx, input }) => {
+      const { work_id, ...data } = input;
+
+      console.log(data);
+
+      return ctx.db
+        .update(Work)
+        .set(data)
+        .where(
+          and(eq(Work.id, work_id), eq(Work.owner_id, ctx.session.user.id)),
+        )
         .returning();
     }),
   delete: protectedProcedure.input(z.string()).mutation(({ ctx, input }) => {

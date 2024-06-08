@@ -19,7 +19,7 @@ export const Workspace = pgTable("workspace", {
   updated_at: timestamp("updated_at", {
     mode: "date",
     withTimezone: true,
-  }).$onUpdateFn(() => sql`now()`),
+  }).$onUpdateFn(() => new Date()),
   owner_id: uuid("owner_id")
     .notNull()
     .references(() => User.id),
@@ -38,6 +38,17 @@ export const CreateWorkspaceSchema = createInsertSchema(Workspace, {
   owner_id: true,
 });
 
+export const UpdateWorkspaceSchema = createInsertSchema(Workspace, {
+  name: z.string().max(256).optional(),
+})
+  .omit({
+    id: true,
+    created_at: true,
+    updated_at: true,
+    owner_id: true,
+  })
+  .setKey("workspace_id", z.string());
+
 export const Work = pgTable("work", {
   id: uuid("id").notNull().primaryKey().defaultRandom(),
   name: varchar("name", { length: 256 }).notNull(),
@@ -52,7 +63,7 @@ export const Work = pgTable("work", {
   updated_at: timestamp("updated_at", {
     mode: "date",
     withTimezone: true,
-  }).$onUpdateFn(() => sql`now()`),
+  }).$onUpdateFn(() => new Date()),
 });
 
 export const workRelation = relations(Work, ({ one, many }) => ({
@@ -75,6 +86,19 @@ export const CreateWorkSchema = createInsertSchema(Work, {
   owner_id: true,
 });
 
+export const UpdateWorkSchema = createInsertSchema(Work, {
+  name: z.string().max(256).optional(),
+  content: z.string().optional(),
+})
+  .omit({
+    id: true,
+    created_at: true,
+    updated_at: true,
+    owner_id: true,
+    workspace_id: true,
+  })
+  .setKey("work_id", z.string());
+
 export const Dialogue = pgTable("dialogue", {
   id: uuid("id").notNull().primaryKey().defaultRandom(),
   name: varchar("name", { length: 256 }).notNull(),
@@ -94,7 +118,7 @@ export const Dialogue = pgTable("dialogue", {
   updated_at: timestamp("updated_at", {
     mode: "date",
     withTimezone: true,
-  }).$onUpdateFn(() => sql`now()`),
+  }).$onUpdateFn(() => new Date()),
 });
 
 export const dialogueRelation = relations(Dialogue, ({ one, many }) => ({
@@ -121,6 +145,22 @@ export const CreateDialogueSchema = createInsertSchema(Dialogue, {
   owner_id: true,
 });
 
+export const UpdateDialogueSchema = createInsertSchema(Dialogue, {
+  name: z.string().max(256).optional(),
+  content: z.string().optional(),
+  start_at: z.number().optional(),
+  end_at: z.number().optional(),
+})
+  .omit({
+    id: true,
+    created_at: true,
+    updated_at: true,
+    owner_id: true,
+    workspace_id: true,
+    work_id: true,
+  })
+  .setKey("dialogue_id", z.string());
+
 export const Character = pgTable("character", {
   id: uuid("id").notNull().primaryKey().defaultRandom(),
   name: varchar("name", { length: 256 }).notNull(),
@@ -136,7 +176,7 @@ export const Character = pgTable("character", {
   updated_at: timestamp("updated_at", {
     mode: "date",
     withTimezone: true,
-  }).$onUpdateFn(() => sql`now()`),
+  }).$onUpdateFn(() => new Date()),
 });
 
 export const characterRelation = relations(Character, ({ one, many }) => ({
@@ -162,6 +202,20 @@ export const CreateCharacterSchema = createInsertSchema(Character, {
   owner_id: true,
 });
 
+export const UpdateCharacterSchema = createInsertSchema(Character, {
+  name: z.string().max(256).optional(),
+  image: z.string().optional(),
+  description: z.string().optional(),
+})
+  .omit({
+    id: true,
+    created_at: true,
+    updated_at: true,
+    owner_id: true,
+    workspace_id: true,
+  })
+  .setKey("character_id", z.string());
+
 export const WorkCharacter = pgTable(
   "work_character",
   {
@@ -178,7 +232,7 @@ export const WorkCharacter = pgTable(
     updated_at: timestamp("updated_at", {
       mode: "date",
       withTimezone: true,
-    }).$onUpdateFn(() => sql`now()`),
+    }).$onUpdateFn(() => new Date()),
   },
   (workCharacter) => ({
     pk: primaryKey({
@@ -220,7 +274,7 @@ export const CharacterDialogue = pgTable(
     updated_at: timestamp("updated_at", {
       mode: "date",
       withTimezone: true,
-    }).$onUpdateFn(() => sql`now()`),
+    }).$onUpdateFn(() => new Date()),
   },
   (characterDialogue) => ({
     pk: primaryKey({
@@ -229,7 +283,7 @@ export const CharacterDialogue = pgTable(
   }),
 );
 
-export const createCharacterDialogueSchema = createInsertSchema(
+export const CreateCharacterDialogueSchema = createInsertSchema(
   CharacterDialogue,
   {
     character_id: z.string(),

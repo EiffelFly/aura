@@ -5,7 +5,7 @@ import { and, desc, eq } from "@aura/db";
 import {
   Character,
   CharacterDialogue,
-  createCharacterDialogueSchema,
+  CreateCharacterDialogueSchema,
   Dialogue,
 } from "@aura/db/schema";
 
@@ -53,7 +53,7 @@ export const characterDialogueRouter = {
       });
     }),
   create: protectedProcedure
-    .input(createCharacterDialogueSchema)
+    .input(CreateCharacterDialogueSchema)
     .mutation(({ ctx, input }) => {
       return ctx.db
         .insert(CharacterDialogue)
