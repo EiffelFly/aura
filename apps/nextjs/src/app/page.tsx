@@ -8,6 +8,6 @@ export default async function RootPage() {
   if (workspaces.length === 0 || !workspaces[0]) {
     return redirect("/onboarding");
   } else {
-    return redirect(`/${workspaces[0].id}`);
+    return redirect(`/${workspaces[0].id}/works`);
   }
 }

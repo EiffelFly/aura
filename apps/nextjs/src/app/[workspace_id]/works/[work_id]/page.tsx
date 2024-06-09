@@ -7,6 +7,7 @@ import throttle from "lodash.throttle";
 
 import { Skeleton } from "@aura/ui/skeleton";
 
+import { useUpdateWorkOnSuccessUpdater } from "~/trpc/helper/work";
 import { api } from "~/trpc/react";
 
 const Editor = dynamic(() => import("~/components/editor"), { ssr: false });
@@ -19,11 +20,12 @@ export default function WorkPage({
   const ref = React.useRef<MDXEditorMethods>(null);
   const work = api.work.byId.useQuery({ id: work_id });
 
-  const utils = api.useUtils();
+  const updateWorkOnSuccessUpdater = useUpdateWorkOnSuccessUpdater();
   const updateWork = api.work.update.useMutation({
     onSuccess: (data) => {
-      if (data[0]) {
-        utils.work.byId.setData({ id: data[0].id }, () => data[0]);
+      const target = data[0];
+      if (target) {
+        updateWorkOnSuccessUpdater(data);
       }
     },
   });

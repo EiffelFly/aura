@@ -49,7 +49,8 @@ export const LeftSidebar = ({
           <Pencil1Icon className="h-4 w-4 stroke-secondary" />
         </Button>
       </div>
-      <div className="flex p-4">
+      <div className="flex flex-col p-4">
+        <button className="mb-4 rounded bg-accent py-2">Magic Wand</button>
         <MainNavigations />
       </div>
       <Separator />
