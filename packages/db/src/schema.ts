@@ -12,7 +12,7 @@ import {
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const Workspace = pgTable("workspace", {
+export const Workspace = pgTable("workspaces", {
   id: uuid("id").notNull().primaryKey().defaultRandom(),
   name: varchar("name", { length: 256 }).notNull(),
   created_at: timestamp("created_at").defaultNow().notNull(),
@@ -49,7 +49,7 @@ export const UpdateWorkspaceSchema = createInsertSchema(Workspace, {
   })
   .setKey("workspace_id", z.string());
 
-export const Work = pgTable("work", {
+export const Work = pgTable("works", {
   id: uuid("id").notNull().primaryKey().defaultRandom(),
   name: varchar("name", { length: 256 }).notNull(),
   content: text("content"),
@@ -99,7 +99,7 @@ export const UpdateWorkSchema = createInsertSchema(Work, {
   })
   .setKey("work_id", z.string());
 
-export const Dialogue = pgTable("dialogue", {
+export const Dialogue = pgTable("dialogues", {
   id: uuid("id").notNull().primaryKey().defaultRandom(),
   name: varchar("name", { length: 256 }).notNull(),
   content: text("content"),
@@ -161,7 +161,7 @@ export const UpdateDialogueSchema = createInsertSchema(Dialogue, {
   })
   .setKey("dialogue_id", z.string());
 
-export const Character = pgTable("character", {
+export const Character = pgTable("characters", {
   id: uuid("id").notNull().primaryKey().defaultRandom(),
   name: varchar("name", { length: 256 }).notNull(),
   image: text("image"),
@@ -217,7 +217,7 @@ export const UpdateCharacterSchema = createInsertSchema(Character, {
   .setKey("character_id", z.string());
 
 export const WorkCharacter = pgTable(
-  "work_character",
+  "work_characters",
   {
     work_id: uuid("work_id")
       .notNull()
@@ -259,7 +259,7 @@ export const WorkCharacterRelation = relations(WorkCharacter, ({ one }) => ({
 }));
 
 export const CharacterDialogue = pgTable(
-  "character_dialogue",
+  "character_dialogues",
   {
     character_id: uuid("character_id")
       .notNull()
@@ -309,7 +309,7 @@ export const CharacterDialogueRelation = relations(
   }),
 );
 
-export const User = pgTable("user", {
+export const User = pgTable("users", {
   id: uuid("id").notNull().primaryKey().defaultRandom(),
   name: varchar("name", { length: 255 }),
   image: text("image"),
@@ -327,7 +327,7 @@ export const userRelation = relations(User, ({ many }) => ({
 }));
 
 export const Account = pgTable(
-  "account",
+  "accounts",
   {
     userId: uuid("userId")
       .notNull()
@@ -356,7 +356,7 @@ export const AccountRelation = relations(Account, ({ one }) => ({
   user: one(User, { fields: [Account.userId], references: [User.id] }),
 }));
 
-export const Session = pgTable("session", {
+export const Session = pgTable("sessions", {
   sessionToken: varchar("sessionToken", { length: 255 }).notNull().primaryKey(),
   userId: uuid("userId")
     .notNull()
