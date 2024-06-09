@@ -3,8 +3,11 @@
 import * as React from "react";
 import { usePathname, useRouter } from "next/navigation";
 
+import { CharacterIcon } from "@aura/ui/icons/CharacterIcon";
 import { DialogueIcon } from "@aura/ui/icons/DialogueIcon";
 import { WorkIcon } from "@aura/ui/icons/WorkIcon";
+
+import { useWorkspaceId } from "~/hook/use-workspace-id";
 
 export const NavigationButton = ({
   target,
@@ -30,19 +33,24 @@ export const NavigationButton = ({
 };
 
 export const MainNavigations = () => {
-  const pathname = usePathname();
+  const workspaceId = useWorkspaceId();
 
   return (
     <div className="flex w-full flex-col gap-y-2">
       <NavigationButton
-        target="/overview/works"
+        target={`/${workspaceId}/works`}
         title="Works"
         icon={<WorkIcon className="h-4 w-4 stroke-secondary" />}
       />
       <NavigationButton
-        target="/overview/dialogues"
+        target={`/${workspaceId}/dialogues`}
         title="Dialogues"
         icon={<DialogueIcon className="h-4 w-4 stroke-secondary" />}
+      />
+      <NavigationButton
+        target={`/${workspaceId}/characters`}
+        title="Characters"
+        icon={<CharacterIcon className="h-4 w-4 stroke-secondary" />}
       />
     </div>
   );
