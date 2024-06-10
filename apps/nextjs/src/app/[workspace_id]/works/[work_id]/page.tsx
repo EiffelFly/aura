@@ -13,14 +13,16 @@ import { api } from "~/trpc/react";
 const Editor = dynamic(() => import("~/components/editor"), { ssr: false });
 
 export default function WorkPage({
-  params: { work_id },
+  params: { work_id, workspace_id },
 }: {
-  params: { work_id: string };
+  params: { workspace_id: string; work_id: string };
 }) {
   const ref = React.useRef<MDXEditorMethods>(null);
   const work = api.works.byId.useQuery({ id: work_id });
 
-  const updateWorkOnSuccessUpdater = useUpdateWorkOnSuccessUpdater();
+  const updateWorkOnSuccessUpdater = useUpdateWorkOnSuccessUpdater({
+    workspace_id,
+  });
   const updateWork = api.works.update.useMutation({
     onSuccess: (data) => {
       const target = data[0];
@@ -44,7 +46,7 @@ export default function WorkPage({
       }}
       className="h-full w-full"
     >
-      <div className="relative mx-auto flex h-full max-w-[var(--centralized-content-width)] flex-col gap-y-10 py-[150px]">
+      <div className="relative mx-auto flex h-full max-w-[var(--centralized-content-width)] flex-col gap-y-10 pt-[150px]">
         {work.isSuccess &&
         (work.data?.content === "" || !work.data?.content) ? (
           <div className="absolute h-0.5 w-4 -translate-y-5 bg-secondary"></div>

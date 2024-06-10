@@ -2,7 +2,11 @@
 
 import { api } from "../react";
 
-export const useUpdateWorkOnSuccessUpdater = () => {
+export const useUpdateWorkOnSuccessUpdater = ({
+  workspace_id,
+}: {
+  workspace_id: string;
+}) => {
   const utils = api.useUtils();
 
   // We will solve the any data later
@@ -10,7 +14,7 @@ export const useUpdateWorkOnSuccessUpdater = () => {
     const target = data[0];
     if (target) {
       utils.works.byId.setData({ id: target.id }, () => target);
-      utils.works.all.setData(undefined, (prev) => {
+      utils.works.all.setData({ workspace_id }, (prev) => {
         if (!prev) {
           return [target];
         }

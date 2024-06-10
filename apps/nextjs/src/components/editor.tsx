@@ -32,7 +32,7 @@ const Editor = ({
         ref={editorRef}
         markdown={markdown}
         plugins={[headingsPlugin(), listsPlugin(), markdownShortcutPlugin()]}
-        contentEditableClassName="prose-xl placeholder:text-accent h-full font-mono prose-neutral dark:prose-invert !max-w-none focus:!border-0 focus:!outline-none focus:ring-0"
+        contentEditableClassName="prose-xl pb-20 placeholder:text-accent h-full font-mono prose-neutral dark:prose-invert !max-w-none focus:!border-0 focus:!outline-none focus:ring-0"
         placeholder={placeholder}
       />
     </article>

@@ -7,13 +7,18 @@ import { CreateWorkSchema, UpdateWorkSchema, Work } from "@aura/db/schema";
 import { protectedProcedure } from "../trpc";
 
 export const worksRouter = {
-  all: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.query.Work.findMany({
-      where: eq(Work.owner_id, ctx.session.user.id),
-      orderBy: desc(Work.id),
-      limit: 100,
-    });
-  }),
+  all: protectedProcedure
+    .input(z.object({ workspace_id: z.string() }))
+    .query(({ ctx, input }) => {
+      return ctx.db.query.Work.findMany({
+        where: and(
+          eq(Work.owner_id, ctx.session.user.id),
+          eq(Work.workspace_id, input.workspace_id),
+        ),
+        orderBy: desc(Work.id),
+        limit: 100,
+      });
+    }),
   byId: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(({ ctx, input }) => {

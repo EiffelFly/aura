@@ -10,7 +10,7 @@ export default function WorkOverviewPage({
 }) {
   return (
     <OverviewContainer workspace_id={params.workspace_id}>
-      <WorkList />
+      <WorkList workspace_id={params.workspace_id} />
     </OverviewContainer>
   );
 }

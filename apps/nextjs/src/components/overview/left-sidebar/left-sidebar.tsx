@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Pencil1Icon } from "@radix-ui/react-icons";
 
@@ -18,6 +19,9 @@ export const LeftSidebar = ({
 }) => {
   const router = useRouter();
   const utils = api.useUtils();
+
+  const [isLoading, setIsLoading] = React.useState(false);
+
   const createWork = api.works.create.useMutation({
     onSuccess: async (data) => {
       await utils.works.invalidate();
@@ -50,7 +54,27 @@ export const LeftSidebar = ({
         </Button>
       </div>
       <div className="flex flex-col p-4">
-        <button className="mb-4 rounded bg-accent py-2">Magic Wand</button>
+        <button
+          onClick={async () => {
+            try {
+              setIsLoading(true);
+              const res = await fetch("/api/ai", {
+                method: "POST",
+                body: JSON.stringify({
+                  workspace_id: current_workspace_id,
+                }),
+              });
+              setIsLoading(false);
+            } catch (error) {
+              setIsLoading(false);
+              console.log(error);
+            }
+          }}
+          className="mb-4 rounded bg-accent py-2"
+          disabled={isLoading}
+        >
+          {isLoading ? "Processing..." : "Magic Wand"}
+        </button>
         <MainNavigations />
       </div>
       <Separator />

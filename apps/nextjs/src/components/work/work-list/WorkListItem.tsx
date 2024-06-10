@@ -12,10 +12,12 @@ export const WorkListItem = ({
   id,
   name,
   updated_at,
+  workspace_id,
 }: {
   id: string;
   name: string;
   updated_at: Date | null;
+  workspace_id: string;
 }) => {
   const router = useRouter();
   const workspaceId = useWorkspaceId();
@@ -30,7 +32,9 @@ export const WorkListItem = ({
     [],
   );
 
-  const updateWorkOnSuccessUpdater = useUpdateWorkOnSuccessUpdater();
+  const updateWorkOnSuccessUpdater = useUpdateWorkOnSuccessUpdater({
+    workspace_id,
+  });
   const updateWork = api.works.update.useMutation({
     onSuccess: (data) => {
       const target = data[0];
