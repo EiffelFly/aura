@@ -18,9 +18,9 @@ export const LeftSidebar = ({
 }) => {
   const router = useRouter();
   const utils = api.useUtils();
-  const createWork = api.work.create.useMutation({
+  const createWork = api.works.create.useMutation({
     onSuccess: async (data) => {
-      await utils.workspace.invalidate();
+      await utils.works.invalidate();
 
       if (data[0]) {
         router.push(`/${current_workspace_id}/works/${data[0].id}`);

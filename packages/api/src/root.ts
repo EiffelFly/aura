@@ -1,20 +1,20 @@
 import { authRouter } from "./router/auth";
-import { characterRouter } from "./router/character";
-import { characterDialogueRouter } from "./router/characterDialogue";
-import { dialogueRouter } from "./router/dialogue";
-import { workRouter } from "./router/work";
-import { workCharacterRouter } from "./router/workCharacter";
-import { workspaceRouter } from "./router/workspace";
+import { characterDialoguesRouter } from "./router/characterDialogues";
+import { charactersRouter } from "./router/characters";
+import { dialoguesRouter } from "./router/dialogues";
+import { workCharactersRouter } from "./router/workCharacters";
+import { worksRouter } from "./router/works";
+import { workspacesRouter } from "./router/workspaces";
 import { createTRPCRouter } from "./trpc";
 
 export const appRouter = createTRPCRouter({
   auth: authRouter,
-  work: workRouter,
-  workspace: workspaceRouter,
-  character: characterRouter,
-  dialogue: dialogueRouter,
-  workCharacter: workCharacterRouter,
-  characterDialogue: characterDialogueRouter,
+  works: worksRouter,
+  workspaces: workspacesRouter,
+  characters: charactersRouter,
+  dialogues: dialoguesRouter,
+  workCharacters: workCharactersRouter,
+  characterDialogues: characterDialoguesRouter,
 });
 
 // export type definition of API

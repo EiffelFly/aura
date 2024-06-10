@@ -17,7 +17,7 @@ export const WorkspaceSwitch = ({
 }) => {
   const router = useRouter();
   const session = useSession();
-  const workspaces = api.workspace.all.useQuery();
+  const workspaces = api.workspaces.all.useQuery();
 
   return (
     <Popover>

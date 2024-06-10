@@ -18,10 +18,10 @@ export default function WorkPage({
   params: { work_id: string };
 }) {
   const ref = React.useRef<MDXEditorMethods>(null);
-  const work = api.work.byId.useQuery({ id: work_id });
+  const work = api.works.byId.useQuery({ id: work_id });
 
   const updateWorkOnSuccessUpdater = useUpdateWorkOnSuccessUpdater();
-  const updateWork = api.work.update.useMutation({
+  const updateWork = api.works.update.useMutation({
     onSuccess: (data) => {
       const target = data[0];
       if (target) {

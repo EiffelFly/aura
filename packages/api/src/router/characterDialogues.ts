@@ -11,7 +11,7 @@ import {
 
 import { protectedProcedure } from "../trpc";
 
-export const characterDialogueRouter = {
+export const characterDialoguesRouter = {
   all: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.CharacterDialogue.findMany({
       where: eq(CharacterDialogue.owner_id, ctx.session.user.id),

@@ -32,10 +32,10 @@ export const CreateWorkspace = () => {
   });
 
   const utils = api.useUtils();
-  const createWorkspace = api.workspace.create.useMutation({
+  const createWorkspace = api.workspaces.create.useMutation({
     onSuccess: async () => {
       form.reset();
-      await utils.workspace.invalidate();
+      await utils.workspaces.invalidate();
       router.push("/");
     },
     onError: () => {

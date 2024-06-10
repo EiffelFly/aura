@@ -64,6 +64,7 @@ export const Work = pgTable("works", {
     mode: "date",
     withTimezone: true,
   }).$onUpdateFn(() => new Date()),
+  processed: boolean("processed").default(false),
 });
 
 export const workRelation = relations(Work, ({ one, many }) => ({
@@ -79,6 +80,7 @@ export const CreateWorkSchema = createInsertSchema(Work, {
   name: z.string().max(256),
   content: z.string().optional(),
   workspace_id: z.string(),
+  processed: z.boolean().optional(),
 }).omit({
   id: true,
   created_at: true,
@@ -89,6 +91,7 @@ export const CreateWorkSchema = createInsertSchema(Work, {
 export const UpdateWorkSchema = createInsertSchema(Work, {
   name: z.string().max(256).optional(),
   content: z.string().optional(),
+  processed: z.boolean().optional(),
 })
   .omit({
     id: true,

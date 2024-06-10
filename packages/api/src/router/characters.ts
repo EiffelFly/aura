@@ -12,7 +12,7 @@ import {
 
 import { protectedProcedure } from "../trpc";
 
-export const characterRouter = {
+export const charactersRouter = {
   all: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.Character.findMany({
       where: eq(Character.owner_id, ctx.session.user.id),

@@ -9,8 +9,8 @@ export const useUpdateWorkOnSuccessUpdater = () => {
   return (data: any) => {
     const target = data[0];
     if (target) {
-      utils.work.byId.setData({ id: target.id }, () => target);
-      utils.work.all.setData(undefined, (prev) => {
+      utils.works.byId.setData({ id: target.id }, () => target);
+      utils.works.all.setData(undefined, (prev) => {
         if (!prev) {
           return [target];
         }

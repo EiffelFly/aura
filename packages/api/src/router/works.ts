@@ -2,37 +2,33 @@ import { TRPCRouterRecord } from "@trpc/server";
 import { z } from "zod";
 
 import { and, desc, eq } from "@aura/db";
-import {
-  CreateWorkspaceSchema,
-  UpdateWorkspaceSchema,
-  Workspace,
-} from "@aura/db/schema";
+import { CreateWorkSchema, UpdateWorkSchema, Work } from "@aura/db/schema";
 
 import { protectedProcedure } from "../trpc";
 
-export const workspaceRouter = {
+export const worksRouter = {
   all: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.query.Workspace.findMany({
-      where: eq(Workspace.owner_id, ctx.session.user.id),
-      orderBy: desc(Workspace.id),
+    return ctx.db.query.Work.findMany({
+      where: eq(Work.owner_id, ctx.session.user.id),
+      orderBy: desc(Work.id),
       limit: 100,
     });
   }),
   byId: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(({ ctx, input }) => {
-      return ctx.db.query.Workspace.findFirst({
+      return ctx.db.query.Work.findFirst({
         where: and(
-          eq(Workspace.id, input.id),
-          eq(Workspace.owner_id, ctx.session.user.id),
+          eq(Work.id, input.id),
+          eq(Work.owner_id, ctx.session.user.id),
         ),
       });
     }),
   create: protectedProcedure
-    .input(CreateWorkspaceSchema)
+    .input(CreateWorkSchema)
     .mutation(({ ctx, input }) => {
       return ctx.db
-        .insert(Workspace)
+        .insert(Work)
         .values({
           ...input,
           owner_id: ctx.session.user.id,
@@ -40,29 +36,23 @@ export const workspaceRouter = {
         .returning();
     }),
   update: protectedProcedure
-    .input(UpdateWorkspaceSchema)
+    .input(UpdateWorkSchema)
     .mutation(({ ctx, input }) => {
-      const { workspace_id, ...data } = input;
+      const { work_id, ...data } = input;
+
+      console.log(data);
 
       return ctx.db
-        .update(Workspace)
+        .update(Work)
         .set(data)
         .where(
-          and(
-            eq(Workspace.id, workspace_id),
-            eq(Workspace.owner_id, ctx.session.user.id),
-          ),
+          and(eq(Work.id, work_id), eq(Work.owner_id, ctx.session.user.id)),
         )
         .returning();
     }),
   delete: protectedProcedure.input(z.string()).mutation(({ ctx, input }) => {
     return ctx.db
-      .delete(Workspace)
-      .where(
-        and(
-          eq(Workspace.id, input),
-          eq(Workspace.owner_id, ctx.session.user.id),
-        ),
-      );
+      .delete(Work)
+      .where(and(eq(Work.id, input), eq(Work.owner_id, ctx.session.user.id)));
   }),
 } satisfies TRPCRouterRecord;

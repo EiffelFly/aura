@@ -31,7 +31,7 @@ export const WorkListItem = ({
   );
 
   const updateWorkOnSuccessUpdater = useUpdateWorkOnSuccessUpdater();
-  const updateWork = api.work.update.useMutation({
+  const updateWork = api.works.update.useMutation({
     onSuccess: (data) => {
       const target = data[0];
       if (target) {

@@ -13,7 +13,7 @@ import {
 
 import { protectedProcedure } from "../trpc";
 
-export const dialogueRouter = {
+export const dialoguesRouter = {
   all: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.Dialogue.findMany({
       where: eq(Dialogue.owner_id, ctx.session.user.id),

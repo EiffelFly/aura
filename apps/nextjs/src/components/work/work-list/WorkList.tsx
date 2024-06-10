@@ -2,7 +2,7 @@ import { api } from "~/trpc/react";
 import { WorkListItem } from "./WorkListItem";
 
 export const WorkList = () => {
-  const works = api.work.all.useQuery();
+  const works = api.works.all.useQuery();
 
   return (
     <div className="flex w-full flex-col gap-y-4">
