@@ -6,7 +6,7 @@ import { auth } from "@aura/auth";
 
 import { api } from "~/trpc/server";
 
-type ChatResponse = {
+type ChatResponseFromModel = {
   character: string;
   dialogue: string;
 };
@@ -31,11 +31,11 @@ const handler = auth(async (req: Request) => {
 
   const works = await api.works.all({ workspace_id: body.workspace_id });
 
-  const model = new ChatOpenAI({ model: "gpt-3.5-turbo-0125" });
+  const model = new ChatOpenAI({ model: "gpt-3.5-turbo-0125", temperature: 0 });
 
-  const parser = new JsonOutputParser<ChatResponse[]>();
+  const parser = new JsonOutputParser<ChatResponseFromModel[]>();
 
-  const res: ChatResponse[] = [];
+  const res: ChatResponseFromModel[] = [];
 
   console.log(works);
 
@@ -46,7 +46,8 @@ const handler = auth(async (req: Request) => {
           "system",
           `
               You are an experienced editor, precise and detail-oriented, and doing stuff steb by step.
-              First you will identify the dialogues in the text.
+              First you will identify the dialogues in the text. DO NOT come up with any dialogues that is not 
+              in the text or change the dialogues in any way.
     
               Let's take this sentence for example,
     
@@ -66,8 +67,12 @@ const handler = auth(async (req: Request) => {
 
       console.log(response);
 
-      res.push(...response);
+      for (const r of response) {
+      }
     }
+  }
+
+  for (const r of res) {
   }
 
   return new Response(JSON.stringify(res), {

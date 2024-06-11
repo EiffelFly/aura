@@ -67,6 +67,27 @@ export const Work = pgTable("works", {
   processed: boolean("processed").default(false),
 });
 
+export const WorkVersion = pgTable("work_versions", {
+  id: uuid("id").notNull().primaryKey().defaultRandom(),
+  version: integer("version").notNull(),
+  work_id: uuid("work_id")
+    .notNull()
+    .references(() => Work.id),
+  content: text("content"),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at", {
+    mode: "date",
+    withTimezone: true,
+  }).$onUpdateFn(() => new Date()),
+});
+
+export const workVersionRelation = relations(WorkVersion, ({ one, many }) => ({
+  work: one(Work, {
+    fields: [WorkVersion.work_id],
+    references: [Work.id],
+  }),
+}));
+
 export const workRelation = relations(Work, ({ one, many }) => ({
   owner: one(User, { fields: [Work.owner_id], references: [User.id] }),
   workspace: one(Workspace, {
@@ -74,6 +95,7 @@ export const workRelation = relations(Work, ({ one, many }) => ({
     references: [Workspace.id],
   }),
   workCharacter: many(WorkCharacter),
+  workVersion: many(WorkVersion),
 }));
 
 export const CreateWorkSchema = createInsertSchema(Work, {
