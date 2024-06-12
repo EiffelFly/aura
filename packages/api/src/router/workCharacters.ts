@@ -30,7 +30,7 @@ export const workCharactersRouter = {
         limit: 100,
       });
     }),
-  bycharacter_id: protectedProcedure
+  byCharacterId: protectedProcedure
     .input(z.object({ character_id: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.WorkCharacter.findMany({
@@ -41,7 +41,7 @@ export const workCharactersRouter = {
         limit: 100,
       });
     }),
-  byWorkAndcharacter_id: protectedProcedure
+  byWorkAndCharacterId: protectedProcedure
     .input(z.object({ work_id: z.string(), character_id: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.WorkCharacter.findFirst({

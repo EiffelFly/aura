@@ -79,13 +79,28 @@ export const WorkVersion = pgTable("work_versions", {
     mode: "date",
     withTimezone: true,
   }).$onUpdateFn(() => new Date()),
+  owner_id: uuid("owner_id")
+    .notNull()
+    .references(() => User.id),
 });
 
-export const workVersionRelation = relations(WorkVersion, ({ one, many }) => ({
+export const CreateWorkVersionSchema = createInsertSchema(WorkVersion, {
+  version: z.number(),
+  work_id: z.string(),
+  content: z.string().optional(),
+}).omit({
+  id: true,
+  created_at: true,
+  updated_at: true,
+  owner_id: true,
+});
+
+export const workVersionRelation = relations(WorkVersion, ({ one }) => ({
   work: one(Work, {
     fields: [WorkVersion.work_id],
     references: [Work.id],
   }),
+  owner: one(User, { fields: [WorkVersion.owner_id], references: [User.id] }),
 }));
 
 export const workRelation = relations(Work, ({ one, many }) => ({

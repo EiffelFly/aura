@@ -18,7 +18,7 @@ export default function WorkPage({
   params: { workspace_id: string; work_id: string };
 }) {
   const ref = React.useRef<MDXEditorMethods>(null);
-  const work = api.works.byId.useQuery({ id: work_id });
+  const work = api.works.by_id.useQuery({ id: work_id });
 
   const updateWorkOnSuccessUpdater = useUpdateWorkOnSuccessUpdater({
     workspace_id,

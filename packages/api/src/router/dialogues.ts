@@ -21,7 +21,7 @@ export const dialoguesRouter = {
       limit: 100,
     });
   }),
-  byId: protectedProcedure
+  by_id: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.Dialogue.findFirst({

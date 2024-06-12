@@ -13,7 +13,7 @@ export const useUpdateWorkOnSuccessUpdater = ({
   return (data: any) => {
     const target = data[0];
     if (target) {
-      utils.works.byId.setData({ id: target.id }, () => target);
+      utils.works.by_id.setData({ id: target.id }, () => target);
       utils.works.all.setData({ workspace_id }, (prev) => {
         if (!prev) {
           return [target];

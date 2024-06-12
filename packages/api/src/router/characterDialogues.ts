@@ -19,35 +19,35 @@ export const characterDialoguesRouter = {
       limit: 100,
     });
   }),
-  bycharacter_id: protectedProcedure
+  by_character_id: protectedProcedure
     .input(z.object({ character_id: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.CharacterDialogue.findMany({
         where: and(
-          eq(Character.id, input.character_id),
+          eq(CharacterDialogue.character_id, input.character_id),
           eq(CharacterDialogue.owner_id, ctx.session.user.id),
         ),
         limit: 100,
       });
     }),
-  bydialogue_id: protectedProcedure
+  by_dialogue_id: protectedProcedure
     .input(z.object({ dialogue_id: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.CharacterDialogue.findMany({
         where: and(
-          eq(Dialogue.id, input.dialogue_id),
+          eq(CharacterDialogue.dialogue_id, input.dialogue_id),
           eq(CharacterDialogue.owner_id, ctx.session.user.id),
         ),
         limit: 100,
       });
     }),
-  byCharacterAnddialogue_id: protectedProcedure
+  by_character_and_dialogue_id: protectedProcedure
     .input(z.object({ character_id: z.string(), dialogue_id: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.CharacterDialogue.findFirst({
         where: and(
-          eq(Character.id, input.character_id),
-          eq(Dialogue.id, input.dialogue_id),
+          eq(CharacterDialogue.character_id, input.character_id),
+          eq(CharacterDialogue.dialogue_id, input.dialogue_id),
           eq(CharacterDialogue.owner_id, ctx.session.user.id),
         ),
       });

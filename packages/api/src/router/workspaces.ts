@@ -18,7 +18,7 @@ export const workspacesRouter = {
       limit: 100,
     });
   }),
-  byId: protectedProcedure
+  by_id: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.Workspace.findFirst({
