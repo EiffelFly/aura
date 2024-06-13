@@ -13,13 +13,18 @@ import {
 import { protectedProcedure } from "../trpc";
 
 export const charactersRouter = {
-  all: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.query.Character.findMany({
-      where: eq(Character.owner_id, ctx.session.user.id),
-      orderBy: desc(Character.id),
-      limit: 100,
-    });
-  }),
+  all: protectedProcedure
+    .input(z.object({ workspace_id: z.string() }))
+    .query(({ ctx, input }) => {
+      return ctx.db.query.Character.findMany({
+        where: and(
+          eq(Character.owner_id, ctx.session.user.id),
+          eq(Character.workspace_id, input.workspace_id),
+        ),
+        orderBy: desc(Character.id),
+        limit: 100,
+      });
+    }),
   by_id: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(({ ctx, input }) => {

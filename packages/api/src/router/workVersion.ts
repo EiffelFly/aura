@@ -43,7 +43,6 @@ export const workVersionRouter = {
         .insert(WorkVersion)
         .values({
           ...input,
-          id: `${input.work_id}-${input.version}`,
           owner_id: ctx.session.user.id,
         })
         .returning();
