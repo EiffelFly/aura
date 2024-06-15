@@ -9,7 +9,7 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
 export const Workspace = pgTable("workspaces", {
@@ -65,6 +65,7 @@ export const Work = pgTable("works", {
     withTimezone: true,
   }).$onUpdateFn(() => new Date()),
   processed: boolean("processed").default(false),
+  latest_version: integer("latest_version").notNull().default(0),
 });
 
 export const WorkVersion = pgTable("work_versions", {
@@ -141,7 +142,6 @@ export const UpdateWorkSchema = createInsertSchema(Work, {
 
 export const Dialogue = pgTable("dialogues", {
   id: uuid("id").notNull().primaryKey().defaultRandom(),
-  name: varchar("name", { length: 256 }).notNull(),
   content: text("content"),
   start_at: integer("start_at").notNull(),
   end_at: integer("end_at").notNull(),
@@ -154,6 +154,12 @@ export const Dialogue = pgTable("dialogues", {
   work_id: uuid("work_id")
     .notNull()
     .references(() => Work.id),
+  work_version_id: uuid("work_version_id")
+    .notNull()
+    .references(() => WorkVersion.id),
+  character_id: uuid("character_id")
+    .notNull()
+    .references(() => Character.id),
   created_at: timestamp("created_at").defaultNow().notNull(),
   updated_at: timestamp("updated_at", {
     mode: "date",
@@ -169,10 +175,17 @@ export const dialogueRelation = relations(Dialogue, ({ one, many }) => ({
   }),
   work: one(Work, { fields: [Dialogue.work_id], references: [Work.id] }),
   characterDialogue: many(CharacterDialogue),
+  character: one(Character, {
+    fields: [Dialogue.character_id],
+    references: [Character.id],
+  }),
+  workVersion: one(WorkVersion, {
+    fields: [Dialogue.work_version_id],
+    references: [WorkVersion.id],
+  }),
 }));
 
 export const CreateDialogueSchema = createInsertSchema(Dialogue, {
-  name: z.string().max(256),
   content: z.string().optional(),
   start_at: z.number(),
   end_at: z.number(),
@@ -185,8 +198,11 @@ export const CreateDialogueSchema = createInsertSchema(Dialogue, {
   owner_id: true,
 });
 
+export const SelectDialogueSchema = createSelectSchema(Dialogue);
+
+export type TDialogue = z.infer<typeof SelectDialogueSchema>;
+
 export const UpdateDialogueSchema = createInsertSchema(Dialogue, {
-  name: z.string().max(256).optional(),
   content: z.string().optional(),
   start_at: z.number().optional(),
   end_at: z.number().optional(),
