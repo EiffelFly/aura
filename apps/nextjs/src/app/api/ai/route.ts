@@ -1,26 +1,25 @@
-import { JsonOutputParser } from "@langchain/core/output_parsers";
-import { ChatPromptTemplate } from "@langchain/core/prompts";
-import { ChatOpenAI } from "@langchain/openai";
+import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
+import OpenAI from "openai";
+import { z } from "zod";
 
 import { auth } from "@aura/auth";
+import { TDialogue } from "@aura/db/schema";
 
 import { api } from "~/trpc/server";
+import { systemPrompt } from "./_prompt";
 
-type ChatResponseFromModel = {
-  character: string;
-  dialogue: string;
-};
+const DialogueSchema = z.object({
+  character: z.string(),
+  dialogue: z.string(),
+});
 
-const formatHint = `[
-  {
-    "character": "Queen",
-    "dialogue": "You needn't say “exactually,”",
-  },
-  {
-    "character": "Queen",
-    "dialogue": "I can believe it without that. Now I'll give you something to believe. I'm just one hundred and one, five months and a day.",
-  },
-]`;
+const ChatResponseFromModelSchema = z.object({
+  dialogues: z.array(DialogueSchema),
+});
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 const handler = auth(async (req: Request) => {
   const body = await req.json();
@@ -30,56 +29,130 @@ const handler = auth(async (req: Request) => {
   }
 
   const works = await api.works.all({ workspace_id: body.workspace_id });
+  const characters = await api.characters.all({
+    workspace_id: body.workspace_id,
+  });
 
-  const model = new ChatOpenAI({ model: "gpt-3.5-turbo-0125", temperature: 0 });
-
-  const parser = new JsonOutputParser<ChatResponseFromModel[]>();
-
-  const res: ChatResponseFromModel[] = [];
-
-  console.log(works);
+  const dialogues: TDialogue[] = [];
 
   for (const work of works) {
-    if (work.content) {
-      const prompt = ChatPromptTemplate.fromMessages([
-        [
-          "system",
-          `
-              You are an experienced editor, precise and detail-oriented, and doing stuff steb by step.
-              First you will identify the dialogues in the text. DO NOT come up with any dialogues that is not 
-              in the text or change the dialogues in any way.
-    
-              Let's take this sentence for example,
-    
-              'You needn't say “exactually,”’ the Queen remarked: 'I can believe it without that. Now I'll give you something to believe. I'm just one hundred and one, five months and a day.'
-    
-              You Respond only in valid JSON. The JSON object you return should match the following schema:
-    
-              {formatHint}
-            `,
-        ],
-        ["human", "{query}"],
-      ]);
+    if (work.content && !work.processed) {
+      const splitter = new RecursiveCharacterTextSplitter({
+        chunkSize: 3000,
+        chunkOverlap: 0,
+        separators: ['"', "'", "\n\n", "\n", " ", ""],
+      });
 
-      const chain = prompt.pipe(model).pipe(parser);
+      const documents = await splitter.splitText(work.content);
 
-      const response = await chain.invoke({ query: work.content, formatHint });
+      const newVersion = work.latest_version + 1;
 
-      console.log(response);
+      const totalResponses: z.infer<typeof DialogueSchema>[] = [];
 
-      for (const r of response) {
+      for (const doc of documents) {
+        console.log("doc", doc);
+
+        const chatCompletion = await openai.chat.completions.create({
+          messages: [
+            {
+              role: "system",
+              content: systemPrompt,
+            },
+            {
+              role: "user",
+              content: `${doc}`,
+            },
+          ],
+          model: "gpt-4o",
+          top_p: 1,
+          temperature: 0.5,
+          presence_penalty: 0,
+          stream: false,
+          max_tokens: 4096,
+          response_format: {
+            type: "json_object",
+          },
+        });
+
+        if (!chatCompletion.choices[0]?.message.content) {
+          return new Response("Error with model response", {
+            status: 500,
+          });
+        }
+
+        let parsedResponse: z.infer<typeof ChatResponseFromModelSchema> | null =
+          null;
+
+        try {
+          console.log(chatCompletion.choices[0]?.message.content);
+          parsedResponse = ChatResponseFromModelSchema.parse(
+            JSON.parse(chatCompletion.choices[0]?.message.content),
+          );
+        } catch (error) {
+          console.error(error);
+          return new Response("Error with parsing model response", {
+            status: 500,
+          });
+        }
+
+        if (!parsedResponse) {
+          return new Response("Error with parsing model response", {
+            status: 500,
+          });
+        }
+
+        totalResponses.push(...parsedResponse.dialogues);
+      }
+
+      // Create new work version
+      const workVersion = await api.work_version.create({
+        work_id: work.id,
+        version: newVersion,
+        content: work.content,
+      });
+
+      await api.works.update({ work_id: work.id, latest_version: newVersion });
+
+      for (const r of totalResponses) {
+        const targetCharacter = characters.find((c) => c.name === r.character);
+        const dialogueStart = work.content.indexOf(r.dialogue);
+        console.log(targetCharacter, dialogueStart, r.dialogue);
+        if (targetCharacter) {
+          if (dialogueStart !== -1 && workVersion[0]) {
+            const dialogue = await api.dialogues.create({
+              workspace_id: body.workspace_id,
+              work_id: work.id,
+              start_at: dialogueStart,
+              end_at: dialogueStart + r.dialogue.length - 1,
+              character_id: targetCharacter.id,
+              work_version_id: workVersion[0].id,
+            });
+            if (dialogue[0]) {
+              dialogues.push(dialogue[0]);
+            }
+          }
+        } else {
+          const newCharacter = await api.characters.create({
+            name: r.character,
+            workspace_id: body.workspace_id,
+          });
+          if (newCharacter[0] && workVersion[0]) {
+            const dialogue = await api.dialogues.create({
+              workspace_id: body.workspace_id,
+              work_id: work.id,
+              start_at: dialogueStart,
+              end_at: dialogueStart + r.dialogue.length - 1,
+              character_id: newCharacter[0].id,
+              work_version_id: workVersion[0].id,
+            });
+            if (dialogue[0]) {
+              dialogues.push(dialogue[0]);
+            }
+          }
+        }
       }
     }
   }
-
-  for (const r of res) {
-  }
-
-  return new Response(JSON.stringify(res), {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
 });
 
 export { handler as POST };
