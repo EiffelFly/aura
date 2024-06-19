@@ -14,13 +14,40 @@ import {
 import { protectedProcedure } from "../trpc";
 
 export const dialoguesRouter = {
-  all: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.query.Dialogue.findMany({
-      where: eq(Dialogue.owner_id, ctx.session.user.id),
-      orderBy: desc(Dialogue.id),
-      limit: 100,
-    });
-  }),
+  all: protectedProcedure
+    .input(z.object({ workspace_id: z.string() }))
+    .query(({ ctx, input }) => {
+      return ctx.db.query.Dialogue.findMany({
+        where: and(
+          eq(Dialogue.owner_id, ctx.session.user.id),
+          eq(Dialogue.workspace_id, input.workspace_id),
+        ),
+        orderBy: desc(Dialogue.id),
+        limit: 100,
+      });
+    }),
+  all_by_version: protectedProcedure
+    .input(
+      z.object({
+        work_version_id: z.string(),
+        workspace_id: z.string(),
+        with_character: z.boolean().optional(),
+      }),
+    )
+    .query(({ ctx, input }) => {
+      return ctx.db.query.Dialogue.findMany({
+        where: and(
+          eq(Dialogue.owner_id, ctx.session.user.id),
+          eq(Dialogue.work_version_id, input.work_version_id),
+          eq(Dialogue.workspace_id, input.workspace_id),
+        ),
+        orderBy: desc(Dialogue.id),
+        limit: 100,
+        with: {
+          character: input.with_character ? true : undefined,
+        },
+      });
+    }),
   by_id: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(({ ctx, input }) => {
