@@ -23,6 +23,7 @@ export default function WorkPage({
   const updateWorkOnSuccessUpdater = useUpdateWorkOnSuccessUpdater({
     workspace_id,
   });
+
   const updateWork = api.works.update.useMutation({
     onSuccess: (data) => {
       const target = data[0];
@@ -57,6 +58,7 @@ export default function WorkPage({
               throttledUpdateWork({
                 work_id,
                 content: markdown,
+                processed: false,
               });
             }}
             editorRef={ref}

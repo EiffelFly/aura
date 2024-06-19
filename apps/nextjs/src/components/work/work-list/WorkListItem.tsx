@@ -26,7 +26,6 @@ export const WorkListItem = ({
 
   const debouncedHoverOnNameInput = React.useCallback(
     debounce((value: boolean) => {
-      console.log("deb");
       setIsHoverOnNameInput(value);
     }, 100),
     [],

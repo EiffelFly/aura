@@ -50,8 +50,6 @@ const handler = auth(async (req: Request) => {
       const totalResponses: z.infer<typeof DialogueSchema>[] = [];
 
       for (const doc of documents) {
-        console.log("doc", doc);
-
         const chatCompletion = await openai.chat.completions.create({
           messages: [
             {
@@ -84,7 +82,6 @@ const handler = auth(async (req: Request) => {
           null;
 
         try {
-          console.log(chatCompletion.choices[0]?.message.content);
           parsedResponse = ChatResponseFromModelSchema.parse(
             JSON.parse(chatCompletion.choices[0]?.message.content),
           );
@@ -116,9 +113,9 @@ const handler = auth(async (req: Request) => {
       for (const r of totalResponses) {
         const targetCharacter = characters.find((c) => c.name === r.character);
         const dialogueStart = work.content.indexOf(r.dialogue);
-        console.log(targetCharacter, dialogueStart, r.dialogue);
+
         if (targetCharacter) {
-          if (dialogueStart !== -1 && workVersion[0]) {
+          if (workVersion[0]) {
             const dialogue = await api.dialogues.create({
               workspace_id: body.workspace_id,
               work_id: work.id,
@@ -126,6 +123,7 @@ const handler = auth(async (req: Request) => {
               end_at: dialogueStart + r.dialogue.length - 1,
               character_id: targetCharacter.id,
               work_version_id: workVersion[0].id,
+              content: r.dialogue,
             });
             if (dialogue[0]) {
               dialogues.push(dialogue[0]);
@@ -144,6 +142,7 @@ const handler = auth(async (req: Request) => {
               end_at: dialogueStart + r.dialogue.length - 1,
               character_id: newCharacter[0].id,
               work_version_id: workVersion[0].id,
+              content: r.dialogue,
             });
             if (dialogue[0]) {
               dialogues.push(dialogue[0]);
@@ -151,6 +150,8 @@ const handler = auth(async (req: Request) => {
           }
         }
       }
+
+      return new Response(JSON.stringify(dialogues), { status: 200 });
     }
   }
 });
