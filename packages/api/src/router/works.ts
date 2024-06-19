@@ -1,8 +1,13 @@
-import { TRPCRouterRecord } from "@trpc/server";
+import { inferRouterOutputs, TRPCRouterRecord } from "@trpc/server";
 import { z } from "zod";
 
 import { and, desc, eq } from "@aura/db";
-import { CreateWorkSchema, UpdateWorkSchema, Work } from "@aura/db/schema";
+import {
+  CreateWorkSchema,
+  UpdateWorkSchema,
+  Work,
+  WorkVersion,
+} from "@aura/db/schema";
 
 import { protectedProcedure } from "../trpc";
 
@@ -29,6 +34,38 @@ export const worksRouter = {
         ),
       });
     }),
+  works_with_versions: protectedProcedure
+    .input(z.object({ workspace_id: z.string() }))
+    .query(({ ctx, input }) => {
+      const query = ctx.db.query.Work.findMany({
+        where: and(
+          eq(Work.owner_id, ctx.session.user.id),
+          eq(Work.workspace_id, input.workspace_id),
+        ),
+        orderBy: desc(Work.id),
+        limit: 100,
+        with: {
+          workVersion: {
+            orderBy: desc(WorkVersion.version),
+          },
+        },
+      });
+
+      console.log(query.toSQL());
+
+      return query;
+    }),
+  by_id_with_versions: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(({ ctx, input }) => {
+      return ctx.db
+        .select()
+        .from(Work)
+        .rightJoin(WorkVersion, eq(Work.id, WorkVersion.work_id))
+        .where(
+          and(eq(Work.id, input.id), eq(Work.owner_id, ctx.session.user.id)),
+        );
+    }),
   create: protectedProcedure
     .input(CreateWorkSchema)
     .mutation(({ ctx, input }) => {
@@ -44,8 +81,6 @@ export const worksRouter = {
     .input(UpdateWorkSchema)
     .mutation(({ ctx, input }) => {
       const { work_id, ...data } = input;
-
-      console.log(data);
 
       return ctx.db
         .update(Work)
