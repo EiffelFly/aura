@@ -36,7 +36,7 @@ export const LeftSidebar = ({
   });
 
   return (
-    <div className="flex h-full w-[var(--left-sidebar-width)] flex-col border-r border-border">
+    <div className="flex h-full w-[var(--left-sidebar-width)] flex-shrink-0 flex-col border-r border-border">
       <div className="flex h-[var(--topbar-height)] flex-row items-center justify-between px-4">
         <WorkspaceSwitch current_workspace_id={current_workspace_id} />
         <Button
