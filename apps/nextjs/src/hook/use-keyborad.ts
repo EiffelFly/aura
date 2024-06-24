@@ -18,7 +18,6 @@ export const useKeyboard = () => {
           pathNameArray[2] === "works" &&
           pathNameArray[3]
         ) {
-          console.log("yoyo");
           router.push(`/${pathNameArray[1]}/works`);
           return;
         }
