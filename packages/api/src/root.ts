@@ -16,9 +16,9 @@ export const appRouter = createTRPCRouter({
   workspaces: workspacesRouter,
   characters: charactersRouter,
   dialogues: dialoguesRouter,
-  work_characters: workCharactersRouter,
-  character_dialogues: characterDialoguesRouter,
-  work_version: workVersionRouter,
+  workCharacters: workCharactersRouter,
+  characterDialogues: characterDialoguesRouter,
+  workVersion: workVersionRouter,
 });
 
 // export type definition of API

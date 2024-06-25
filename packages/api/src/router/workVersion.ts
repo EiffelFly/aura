@@ -9,29 +9,29 @@ import { protectedProcedure } from "../trpc";
 export const workVersionRouter = {
   all: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.WorkVersion.findMany({
-      where: eq(WorkVersion.owner_id, ctx.session.user.id),
+      where: eq(WorkVersion.ownerId, ctx.session.user.id),
       orderBy: desc(Work.id),
       limit: 100,
     });
   }),
-  by_id: protectedProcedure
+  byId: protectedProcedure
     .input(z.object({ version_id: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.WorkVersion.findMany({
         where: and(
           eq(WorkVersion.id, input.version_id),
-          eq(WorkVersion.owner_id, ctx.session.user.id),
+          eq(WorkVersion.ownerId, ctx.session.user.id),
         ),
         limit: 100,
       });
     }),
   by_work_id: protectedProcedure
-    .input(z.object({ work_id: z.string() }))
+    .input(z.object({ workId: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.WorkVersion.findMany({
         where: and(
-          eq(WorkVersion.work_id, input.work_id),
-          eq(WorkVersion.owner_id, ctx.session.user.id),
+          eq(WorkVersion.workId, input.workId),
+          eq(WorkVersion.ownerId, ctx.session.user.id),
         ),
         limit: 100,
       });
@@ -43,7 +43,7 @@ export const workVersionRouter = {
         .insert(WorkVersion)
         .values({
           ...input,
-          owner_id: ctx.session.user.id,
+          ownerId: ctx.session.user.id,
         })
         .returning();
     }),
@@ -55,7 +55,7 @@ export const workVersionRouter = {
         .where(
           and(
             eq(Work.id, input.id),
-            eq(WorkVersion.owner_id, ctx.session.user.id),
+            eq(WorkVersion.ownerId, ctx.session.user.id),
           ),
         );
     }),

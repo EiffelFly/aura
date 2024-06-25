@@ -14,24 +14,24 @@ import { protectedProcedure } from "../trpc";
 
 export const charactersRouter = {
   all: protectedProcedure
-    .input(z.object({ workspace_id: z.string() }))
+    .input(z.object({ workspaceId: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.Character.findMany({
         where: and(
-          eq(Character.owner_id, ctx.session.user.id),
-          eq(Character.workspace_id, input.workspace_id),
+          eq(Character.ownerId, ctx.session.user.id),
+          eq(Character.workspaceId, input.workspaceId),
         ),
         orderBy: desc(Character.id),
         limit: 100,
       });
     }),
-  by_id: protectedProcedure
-    .input(z.object({ id: z.string() }))
+  byId: protectedProcedure
+    .input(z.object({ characterId: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.Character.findFirst({
         where: and(
-          eq(Character.id, input.id),
-          eq(Character.owner_id, ctx.session.user.id),
+          eq(Character.id, input.characterId),
+          eq(Character.ownerId, ctx.session.user.id),
         ),
       });
     }),
@@ -42,34 +42,36 @@ export const charactersRouter = {
         .insert(Character)
         .values({
           ...input,
-          owner_id: ctx.session.user.id,
+          ownerId: ctx.session.user.id,
         })
         .returning();
     }),
   update: protectedProcedure
     .input(UpdateCharacterSchema)
     .mutation(({ ctx, input }) => {
-      const { character_id, ...data } = input;
+      const { characterId, ...data } = input;
 
       return ctx.db
         .update(Character)
         .set(data)
         .where(
           and(
-            eq(Character.id, character_id),
-            eq(Character.owner_id, ctx.session.user.id),
+            eq(Character.id, characterId),
+            eq(Character.ownerId, ctx.session.user.id),
           ),
         )
         .returning();
     }),
-  delete: protectedProcedure.input(z.string()).mutation(({ ctx, input }) => {
-    return ctx.db
-      .delete(Character)
-      .where(
-        and(
-          eq(Character.id, input),
-          eq(Character.owner_id, ctx.session.user.id),
-        ),
-      );
-  }),
+  delete: protectedProcedure
+    .input(z.object({ characterId: z.string() }))
+    .mutation(({ ctx, input }) => {
+      return ctx.db
+        .delete(Character)
+        .where(
+          and(
+            eq(Character.id, input.characterId),
+            eq(Character.ownerId, ctx.session.user.id),
+          ),
+        );
+    }),
 } satisfies TRPCRouterRecord;

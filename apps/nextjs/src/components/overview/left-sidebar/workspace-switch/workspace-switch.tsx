@@ -11,13 +11,20 @@ import { Skeleton } from "@aura/ui/skeleton";
 import { api } from "~/trpc/react";
 
 export const WorkspaceSwitch = ({
-  current_workspace_id,
+  currentWorkspaceId,
 }: {
-  current_workspace_id: string;
+  currentWorkspaceId: string;
 }) => {
   const router = useRouter();
   const session = useSession();
   const workspaces = api.workspaces.all.useQuery();
+
+  console.log(
+    "workspaces",
+    workspaces.data,
+    currentWorkspaceId,
+    workspaces.data?.find((workspace) => workspace.id === currentWorkspaceId),
+  );
 
   return (
     <Popover>
@@ -26,7 +33,7 @@ export const WorkspaceSwitch = ({
           <span className="font-sans text-lg font-semibold text-secondary">
             {workspaces.isSuccess ? (
               workspaces.data.find(
-                (workspace) => workspace.id === current_workspace_id,
+                (workspace) => workspace.id === currentWorkspaceId,
               )?.name
             ) : (
               <Skeleton className="h-4 w-20 rounded" />
@@ -50,7 +57,7 @@ export const WorkspaceSwitch = ({
                     <p className="font-sans  text-base font-medium text-secondary">
                       {workspace.name}
                     </p>
-                    {current_workspace_id === workspace.id ? (
+                    {currentWorkspaceId === workspace.id ? (
                       <CheckIcon className="h-5 w-5 stroke-secondary" />
                     ) : null}
                   </div>

@@ -6,11 +6,11 @@ import { WorkList } from "~/components/work/work-list";
 export default function WorkOverviewPage({
   params,
 }: {
-  params: { workspace_id: string };
+  params: { workspaceId: string };
 }) {
   return (
-    <OverviewContainer workspace_id={params.workspace_id}>
-      <WorkList workspace_id={params.workspace_id} />
+    <OverviewContainer workspaceId={params.workspaceId}>
+      <WorkList workspaceId={params.workspaceId} />
     </OverviewContainer>
   );
 }

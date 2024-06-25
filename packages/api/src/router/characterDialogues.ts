@@ -12,43 +12,57 @@ import {
 import { protectedProcedure } from "../trpc";
 
 export const characterDialoguesRouter = {
-  all: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.query.CharacterDialogue.findMany({
-      where: eq(CharacterDialogue.owner_id, ctx.session.user.id),
-      orderBy: desc(Character.id),
-      limit: 100,
-    });
-  }),
-  by_character_id: protectedProcedure
-    .input(z.object({ character_id: z.string() }))
+  all: protectedProcedure
+    .input(z.object({ workspaceId: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.CharacterDialogue.findMany({
         where: and(
-          eq(CharacterDialogue.character_id, input.character_id),
-          eq(CharacterDialogue.owner_id, ctx.session.user.id),
+          eq(CharacterDialogue.ownerId, ctx.session.user.id),
+          eq(CharacterDialogue.workspaceId, input.workspaceId),
+        ),
+        orderBy: desc(Character.id),
+        limit: 100,
+      });
+    }),
+  byCharacterId: protectedProcedure
+    .input(z.object({ characterId: z.string(), workspaceId: z.string() }))
+    .query(({ ctx, input }) => {
+      return ctx.db.query.CharacterDialogue.findMany({
+        where: and(
+          eq(CharacterDialogue.characterId, input.characterId),
+          eq(CharacterDialogue.ownerId, ctx.session.user.id),
+          eq(CharacterDialogue.workspaceId, input.workspaceId),
         ),
         limit: 100,
       });
     }),
-  by_dialogue_id: protectedProcedure
-    .input(z.object({ dialogue_id: z.string() }))
+  byDialogueId: protectedProcedure
+    .input(z.object({ dialogueId: z.string(), workspaceId: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.CharacterDialogue.findMany({
         where: and(
-          eq(CharacterDialogue.dialogue_id, input.dialogue_id),
-          eq(CharacterDialogue.owner_id, ctx.session.user.id),
+          eq(CharacterDialogue.dialogueId, input.dialogueId),
+          eq(CharacterDialogue.ownerId, ctx.session.user.id),
+          eq(CharacterDialogue.workspaceId, input.workspaceId),
         ),
         limit: 100,
       });
     }),
-  by_character_and_dialogue_id: protectedProcedure
-    .input(z.object({ character_id: z.string(), dialogue_id: z.string() }))
+  byCharacterAndDialogueId: protectedProcedure
+    .input(
+      z.object({
+        characterId: z.string(),
+        dialogueId: z.string(),
+        workspaceId: z.string(),
+      }),
+    )
     .query(({ ctx, input }) => {
       return ctx.db.query.CharacterDialogue.findFirst({
         where: and(
-          eq(CharacterDialogue.character_id, input.character_id),
-          eq(CharacterDialogue.dialogue_id, input.dialogue_id),
-          eq(CharacterDialogue.owner_id, ctx.session.user.id),
+          eq(CharacterDialogue.characterId, input.characterId),
+          eq(CharacterDialogue.dialogueId, input.dialogueId),
+          eq(CharacterDialogue.ownerId, ctx.session.user.id),
+          eq(CharacterDialogue.workspaceId, input.workspaceId),
         ),
       });
     }),
@@ -57,19 +71,26 @@ export const characterDialoguesRouter = {
     .mutation(({ ctx, input }) => {
       return ctx.db
         .insert(CharacterDialogue)
-        .values({ ...input, owner_id: ctx.session.user.id })
+        .values({ ...input, ownerId: ctx.session.user.id })
         .returning();
     }),
   delete: protectedProcedure
-    .input(z.object({ character_id: z.string(), dialogue_id: z.string() }))
+    .input(
+      z.object({
+        characterId: z.string(),
+        dialogueId: z.string(),
+        workspaceId: z.string(),
+      }),
+    )
     .mutation(({ ctx, input }) => {
       return ctx.db
         .delete(CharacterDialogue)
         .where(
           and(
-            eq(Character.id, input.character_id),
-            eq(Dialogue.id, input.dialogue_id),
-            eq(CharacterDialogue.owner_id, ctx.session.user.id),
+            eq(Character.id, input.characterId),
+            eq(Dialogue.id, input.dialogueId),
+            eq(CharacterDialogue.ownerId, ctx.session.user.id),
+            eq(CharacterDialogue.workspaceId, input.workspaceId),
           ),
         );
     }),

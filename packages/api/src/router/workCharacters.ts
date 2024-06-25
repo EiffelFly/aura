@@ -12,43 +12,57 @@ import {
 import { protectedProcedure } from "../trpc";
 
 export const workCharactersRouter = {
-  all: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.query.WorkCharacter.findMany({
-      where: eq(WorkCharacter.owner_id, ctx.session.user.id),
-      orderBy: desc(Work.id),
-      limit: 100,
-    });
-  }),
+  all: protectedProcedure
+    .input(z.object({ workspaceId: z.string() }))
+    .query(({ ctx }) => {
+      return ctx.db.query.WorkCharacter.findMany({
+        where: and(
+          eq(WorkCharacter.ownerId, ctx.session.user.id),
+          eq(Work.workspaceId, ctx.session.user.id),
+        ),
+        orderBy: desc(Work.id),
+        limit: 100,
+      });
+    }),
   byWorkId: protectedProcedure
-    .input(z.object({ work_id: z.string() }))
+    .input(z.object({ workId: z.string(), workspaceId: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.WorkCharacter.findMany({
         where: and(
-          eq(Work.id, input.work_id),
-          eq(WorkCharacter.owner_id, ctx.session.user.id),
+          eq(Work.id, input.workId),
+          eq(WorkCharacter.ownerId, ctx.session.user.id),
+          eq(Work.workspaceId, input.workspaceId),
         ),
         limit: 100,
       });
     }),
   byCharacterId: protectedProcedure
-    .input(z.object({ character_id: z.string() }))
+    .input(z.object({ characterId: z.string(), workspaceId: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.WorkCharacter.findMany({
         where: and(
-          eq(Character.id, input.character_id),
-          eq(WorkCharacter.owner_id, ctx.session.user.id),
+          eq(Character.id, input.characterId),
+          eq(WorkCharacter.ownerId, ctx.session.user.id),
+          eq(Work.workspaceId, input.workspaceId),
         ),
         limit: 100,
       });
     }),
   byWorkAndCharacterId: protectedProcedure
-    .input(z.object({ work_id: z.string(), character_id: z.string() }))
+    .input(
+      z.object({
+        workId: z.string(),
+        characterId: z.string(),
+        workspaceId: z.string(),
+      }),
+    )
     .query(({ ctx, input }) => {
       return ctx.db.query.WorkCharacter.findFirst({
         where: and(
-          eq(Work.id, input.work_id),
-          eq(Character.id, input.character_id),
-          eq(WorkCharacter.owner_id, ctx.session.user.id),
+          eq(Work.id, input.workId),
+          eq(Character.id, input.characterId),
+          eq(WorkCharacter.ownerId, ctx.session.user.id),
+          eq(Work.workspaceId, input.workspaceId),
         ),
       });
     }),
@@ -59,20 +73,20 @@ export const workCharactersRouter = {
         .insert(WorkCharacter)
         .values({
           ...input,
-          owner_id: ctx.session.user.id,
+          ownerId: ctx.session.user.id,
         })
         .returning();
     }),
   delete: protectedProcedure
-    .input(z.object({ work_id: z.string(), character_id: z.string() }))
+    .input(z.object({ workId: z.string(), characterId: z.string() }))
     .mutation(({ ctx, input }) => {
       return ctx.db
         .delete(WorkCharacter)
         .where(
           and(
-            eq(Work.id, input.work_id),
-            eq(Character.id, input.character_id),
-            eq(WorkCharacter.owner_id, ctx.session.user.id),
+            eq(Work.id, input.workId),
+            eq(Character.id, input.characterId),
+            eq(WorkCharacter.ownerId, ctx.session.user.id),
           ),
         );
     }),

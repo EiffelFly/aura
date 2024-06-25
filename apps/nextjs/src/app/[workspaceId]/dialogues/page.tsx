@@ -5,20 +5,20 @@ import { OverviewContainer } from "~/components/overview/OverviewContainer";
 import { api } from "~/trpc/server";
 
 export default async function DialogueOverviewPage({
-  params: { workspace_id },
+  params: { workspaceId },
 }: {
-  params: { workspace_id: string };
+  params: { workspaceId: string };
 }) {
-  const works = await api.works.works_with_versions({ workspace_id });
+  const works = await api.works.worksWithVersions({ workspaceId });
 
-  const dialogues: RouterOutputs["dialogues"]["all_by_version"] = [];
+  const dialogues: RouterOutputs["dialogues"]["allByVersion"] = [];
 
   for (const work of works) {
     if (work.workVersion[0]) {
-      const workDialogues = await api.dialogues.all_by_version({
-        work_version_id: work.workVersion[0]?.id,
-        workspace_id,
-        with_character: true,
+      const workDialogues = await api.dialogues.allByVersion({
+        workVersionId: work.workVersion[0]?.id,
+        workspaceId,
+        withCharacter: true,
       });
 
       dialogues.push(...workDialogues);
@@ -26,7 +26,7 @@ export default async function DialogueOverviewPage({
   }
 
   return (
-    <OverviewContainer workspace_id={workspace_id}>
+    <OverviewContainer workspaceId={workspaceId}>
       <DialogueView dialogues={dialogues} />
     </OverviewContainer>
   );

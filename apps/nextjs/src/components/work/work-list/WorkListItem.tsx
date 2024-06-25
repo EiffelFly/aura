@@ -11,13 +11,11 @@ import { api } from "~/trpc/react";
 export const WorkListItem = ({
   id,
   name,
-  updated_at,
-  workspace_id,
+  updatedAt,
 }: {
   id: string;
   name: string;
-  updated_at: Date | null;
-  workspace_id: string;
+  updatedAt: Date | null;
 }) => {
   const router = useRouter();
   const workspaceId = useWorkspaceId();
@@ -32,12 +30,13 @@ export const WorkListItem = ({
   );
 
   const updateWorkOnSuccessUpdater = useUpdateWorkOnSuccessUpdater({
-    workspace_id,
+    workspaceId,
   });
+
   const updateWork = api.works.update.useMutation({
     onSuccess: (data) => {
       const target = data[0];
-      if (target) {
+      if (target && updateWorkOnSuccessUpdater) {
         updateWorkOnSuccessUpdater(data);
       }
     },
@@ -72,14 +71,14 @@ export const WorkListItem = ({
               return;
             }
             updateWork.mutate({
-              work_id: id,
+              workId: id,
               name: workListItemName,
             });
           }}
         />
       </div>
       <div className="flex flex-row text-base text-border">
-        {updated_at?.toLocaleTimeString()}
+        {updatedAt?.toLocaleTimeString()}
       </div>
     </button>
   );

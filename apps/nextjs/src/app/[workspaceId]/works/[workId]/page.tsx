@@ -13,15 +13,15 @@ import { api } from "~/trpc/react";
 const Editor = dynamic(() => import("~/components/editor"), { ssr: false });
 
 export default function WorkPage({
-  params: { work_id, workspace_id },
+  params: { workId, workspaceId },
 }: {
-  params: { workspace_id: string; work_id: string };
+  params: { workspaceId: string; workId: string };
 }) {
   const ref = React.useRef<MDXEditorMethods>(null);
-  const work = api.works.by_id.useQuery({ id: work_id });
+  const work = api.works.byId.useQuery({ workId });
 
   const updateWorkOnSuccessUpdater = useUpdateWorkOnSuccessUpdater({
-    workspace_id,
+    workspaceId,
   });
 
   const updateWork = api.works.update.useMutation({
@@ -56,7 +56,7 @@ export default function WorkPage({
           <Editor
             onChange={(markdown) => {
               throttledUpdateWork({
-                work_id,
+                workId,
                 content: markdown,
                 processed: false,
               });

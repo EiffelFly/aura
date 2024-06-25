@@ -1,8 +1,8 @@
 import { api } from "~/trpc/react";
 import { WorkListItem } from "./WorkListItem";
 
-export const WorkList = ({ workspace_id }: { workspace_id: string }) => {
-  const works = api.works.all.useQuery({ workspace_id });
+export const WorkList = ({ workspaceId }: { workspaceId: string }) => {
+  const works = api.works.all.useQuery({ workspaceId });
 
   return (
     <div className="flex w-full flex-col gap-y-4">
@@ -11,8 +11,7 @@ export const WorkList = ({ workspace_id }: { workspace_id: string }) => {
             <WorkListItem
               id={work.id}
               name={work.name}
-              updated_at={work.updated_at}
-              workspace_id={workspace_id}
+              updatedAt={work.updatedAt}
             />
           ))
         : null}

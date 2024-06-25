@@ -11,7 +11,7 @@ import { DialogueNodeData, DialoguesForceGraph } from "./DialoguesForceGraph";
 export const DialogueView = ({
   dialogues,
 }: {
-  dialogues: RouterOutputs["dialogues"]["all_by_version"];
+  dialogues: RouterOutputs["dialogues"]["allByVersion"];
 }) => {
   const graph = React.useMemo(() => {
     const nodes: Node<DialogueNodeData>[] = [];
@@ -33,7 +33,7 @@ export const DialogueView = ({
 
       if (
         dialogue.character &&
-        nodes.findIndex((e) => e.id === dialogue.character_id) === -1
+        nodes.findIndex((e) => e.id === dialogue.characterId) === -1
       ) {
         nodes.push({
           id: dialogue.id,
@@ -49,7 +49,7 @@ export const DialogueView = ({
 
       edges.push({
         id: uuidv4(),
-        source: dialogue.character_id,
+        source: dialogue.characterId,
         target: dialogue.id,
       });
     }

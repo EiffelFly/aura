@@ -13,9 +13,9 @@ import { MainNavigations } from "./main-navigations";
 import { WorkspaceSwitch } from "./workspace-switch";
 
 export const LeftSidebar = ({
-  current_workspace_id,
+  currentWorkspaceId,
 }: {
-  current_workspace_id: string;
+  currentWorkspaceId: string;
 }) => {
   const router = useRouter();
   const utils = api.useUtils();
@@ -27,7 +27,7 @@ export const LeftSidebar = ({
       await utils.works.invalidate();
 
       if (data[0]) {
-        router.push(`/${current_workspace_id}/works/${data[0].id}`);
+        router.push(`/${currentWorkspaceId}/works/${data[0].id}`);
       }
     },
     onError: () => {
@@ -38,11 +38,11 @@ export const LeftSidebar = ({
   return (
     <div className="flex h-full w-[var(--left-sidebar-width)] flex-shrink-0 flex-col border-r border-border">
       <div className="flex h-[var(--topbar-height)] flex-row items-center justify-between px-4">
-        <WorkspaceSwitch current_workspace_id={current_workspace_id} />
+        <WorkspaceSwitch currentWorkspaceId={currentWorkspaceId} />
         <Button
           onClick={() => {
             createWork.mutate({
-              workspace_id: current_workspace_id,
+              workspaceId: currentWorkspaceId,
               content: "",
               name: "Untitled",
             });
@@ -58,10 +58,10 @@ export const LeftSidebar = ({
           onClick={async () => {
             try {
               setIsLoading(true);
-              const res = await fetch("/api/ai", {
+              await fetch("/api/ai", {
                 method: "POST",
                 body: JSON.stringify({
-                  workspace_id: current_workspace_id,
+                  workspaceId: currentWorkspaceId,
                 }),
               });
               setIsLoading(false);

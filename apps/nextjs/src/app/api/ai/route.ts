@@ -24,13 +24,13 @@ const openai = new OpenAI({
 const handler = auth(async (req: Request) => {
   const body = await req.json();
 
-  if (!body.workspace_id) {
-    return new Response("workspace_id is required", { status: 400 });
+  if (!body.workspaceId) {
+    return new Response("workspaceId is required", { status: 400 });
   }
 
-  const works = await api.works.all({ workspace_id: body.workspace_id });
+  const works = await api.works.all({ workspaceId: body.workspaceId });
   const characters = await api.characters.all({
-    workspace_id: body.workspace_id,
+    workspaceId: body.workspaceId,
   });
 
   const dialogues: TDialogue[] = [];
@@ -45,7 +45,7 @@ const handler = auth(async (req: Request) => {
 
       const documents = await splitter.splitText(work.content);
 
-      const newVersion = work.latest_version + 1;
+      const newVersion = work.latestVersion + 1;
 
       const totalResponses: z.infer<typeof DialogueSchema>[] = [];
 
@@ -103,12 +103,12 @@ const handler = auth(async (req: Request) => {
 
       // Create new work version
       const workVersion = await api.work_version.create({
-        work_id: work.id,
+        workId: work.id,
         version: newVersion,
         content: work.content,
       });
 
-      await api.works.update({ work_id: work.id, latest_version: newVersion });
+      await api.works.update({ workId: work.id, latestVersion: newVersion });
 
       for (const r of totalResponses) {
         const targetCharacter = characters.find((c) => c.name === r.character);
@@ -117,12 +117,12 @@ const handler = auth(async (req: Request) => {
         if (targetCharacter) {
           if (workVersion[0]) {
             const dialogue = await api.dialogues.create({
-              workspace_id: body.workspace_id,
-              work_id: work.id,
-              start_at: dialogueStart,
-              end_at: dialogueStart + r.dialogue.length - 1,
-              character_id: targetCharacter.id,
-              work_version_id: workVersion[0].id,
+              workspaceId: body.workspaceId,
+              workId: work.id,
+              startAt: dialogueStart,
+              endAt: dialogueStart + r.dialogue.length - 1,
+              characterId: targetCharacter.id,
+              workVersionId: workVersion[0].id,
               content: r.dialogue,
             });
             if (dialogue[0]) {
@@ -132,16 +132,16 @@ const handler = auth(async (req: Request) => {
         } else {
           const newCharacter = await api.characters.create({
             name: r.character,
-            workspace_id: body.workspace_id,
+            workspaceId: body.workspaceId,
           });
           if (newCharacter[0] && workVersion[0]) {
             const dialogue = await api.dialogues.create({
-              workspace_id: body.workspace_id,
-              work_id: work.id,
-              start_at: dialogueStart,
-              end_at: dialogueStart + r.dialogue.length - 1,
-              character_id: newCharacter[0].id,
-              work_version_id: workVersion[0].id,
+              workspaceId: body.workspaceId,
+              workId: work.id,
+              startAt: dialogueStart,
+              endAt: dialogueStart + r.dialogue.length - 1,
+              characterId: newCharacter[0].id,
+              workVersionId: workVersion[0].id,
               content: r.dialogue,
             });
             if (dialogue[0]) {

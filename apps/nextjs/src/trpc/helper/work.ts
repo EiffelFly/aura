@@ -1,32 +1,41 @@
 "use client";
 
+import * as React from "react";
+
 import { api } from "../react";
 
 export const useUpdateWorkOnSuccessUpdater = ({
-  workspace_id,
+  workspaceId,
 }: {
-  workspace_id: string;
+  workspaceId: string | null;
 }) => {
+  if (!workspaceId) {
+    return null;
+  }
+
   const utils = api.useUtils();
 
   // We will solve the any data later
-  return (data: any) => {
-    const target = data[0];
-    if (target) {
-      utils.works.by_id.setData({ id: target.id }, () => target);
-      utils.works.all.setData({ workspace_id }, (prev) => {
-        if (!prev) {
-          return [target];
-        }
-
-        return prev.map((work) => {
-          if (work.id === target.id) {
-            return target;
+  return React.useCallback(
+    (data: any) => {
+      const target = data[0];
+      if (target) {
+        utils.works.byId.setData({ workId: target.id }, () => target);
+        utils.works.all.setData({ workspaceId }, (prev) => {
+          if (!prev) {
+            return [target];
           }
 
-          return work;
+          return prev.map((work) => {
+            if (work.id === target.id) {
+              return target;
+            }
+
+            return work;
+          });
         });
-      });
-    }
-  };
+      }
+    },
+    [workspaceId],
+  );
 };
