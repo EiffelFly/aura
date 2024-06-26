@@ -6,11 +6,12 @@ import { auth } from "@aura/auth";
 import { TDialogue } from "@aura/db/schema";
 
 import { api } from "~/trpc/server";
-import { systemPrompt } from "./_prompt";
+import { getDialoguesSystemPrompt } from "./_prompt";
 
 const DialogueSchema = z.object({
   character: z.string(),
   dialogue: z.string(),
+  summary: z.string(),
 });
 
 const ChatResponseFromModelSchema = z.object({
@@ -56,7 +57,7 @@ const handler = auth(async (req: Request) => {
           messages: [
             {
               role: "system",
-              content: systemPrompt,
+              content: getDialoguesSystemPrompt,
             },
             {
               role: "user",
@@ -129,6 +130,7 @@ const handler = auth(async (req: Request) => {
               characterId: targetCharacter.id,
               workVersionId: workVersion[0].id,
               content: r.dialogue,
+              summary: r.summary,
             });
             if (dialogue[0]) {
               dialogues.push(dialogue[0]);
@@ -151,6 +153,7 @@ const handler = auth(async (req: Request) => {
               characterId: newCharacter[0].id,
               workVersionId: workVersion[0].id,
               content: r.dialogue,
+              summary: r.summary,
             });
             if (dialogue[0]) {
               dialogues.push(dialogue[0]);

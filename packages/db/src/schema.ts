@@ -143,6 +143,7 @@ export const UpdateWorkSchema = createInsertSchema(Work, {
 export const Dialogue = pgTable("dialogues", {
   id: uuid("id").notNull().primaryKey().defaultRandom(),
   content: text("content"),
+  summary: text("summary"),
   startAt: integer("startAt").notNull(),
   endAt: integer("endAt").notNull(),
   ownerId: uuid("ownerId")
@@ -187,6 +188,7 @@ export const dialogueRelation = relations(Dialogue, ({ one, many }) => ({
 
 export const CreateDialogueSchema = createInsertSchema(Dialogue, {
   content: z.string().optional(),
+  summary: z.string().optional(),
   startAt: z.number(),
   endAt: z.number(),
   workspaceId: z.string(),
@@ -204,6 +206,7 @@ export type TDialogue = z.infer<typeof SelectDialogueSchema>;
 
 export const UpdateDialogueSchema = createInsertSchema(Dialogue, {
   content: z.string().optional(),
+  summary: z.string().optional(),
   startAt: z.number().optional(),
   endAt: z.number().optional(),
 })
