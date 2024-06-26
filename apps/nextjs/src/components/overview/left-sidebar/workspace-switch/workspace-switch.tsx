@@ -18,14 +18,6 @@ export const WorkspaceSwitch = ({
   const router = useRouter();
   const session = useSession();
   const workspaces = api.workspaces.all.useQuery();
-
-  console.log(
-    "workspaces",
-    workspaces.data,
-    currentWorkspaceId,
-    workspaces.data?.find((workspace) => workspace.id === currentWorkspaceId),
-  );
-
   return (
     <Popover>
       <PopoverTrigger asChild>

@@ -17,7 +17,7 @@ export const OverviewContainer = ({
       <LeftSidebar currentWorkspaceId={workspaceId} />
       <div className="flex flex-1 flex-col">
         <Topbar />
-        <div className="w-full p-4">{children}</div>
+        <div className="h-full w-full p-4">{children}</div>
       </div>
     </div>
   );

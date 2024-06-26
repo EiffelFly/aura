@@ -27,7 +27,7 @@ export default function WorkPage({
   const updateWork = api.works.update.useMutation({
     onSuccess: (data) => {
       const target = data[0];
-      if (target) {
+      if (target && updateWorkOnSuccessUpdater) {
         updateWorkOnSuccessUpdater(data);
       }
     },
