@@ -29,16 +29,18 @@ const handler = auth(async (req: Request) => {
   }
 
   const works = await api.works.all({ workspaceId: body.workspaceId });
-  const characters = await api.characters.all({
+  const charactersResponse = await api.characters.all({
     workspaceId: body.workspaceId,
   });
+
+  const currentCharacters = [...charactersResponse];
 
   const dialogues: TDialogue[] = [];
 
   for (const work of works) {
     if (work.content && !work.processed) {
       const splitter = new RecursiveCharacterTextSplitter({
-        chunkSize: 3000,
+        chunkSize: 5000,
         chunkOverlap: 0,
         separators: ['"', "'", "\n\n", "\n", " ", ""],
       });
@@ -102,7 +104,7 @@ const handler = auth(async (req: Request) => {
       }
 
       // Create new work version
-      const workVersion = await api.work_version.create({
+      const workVersion = await api.workVersion.create({
         workId: work.id,
         version: newVersion,
         content: work.content,
@@ -111,7 +113,10 @@ const handler = auth(async (req: Request) => {
       await api.works.update({ workId: work.id, latestVersion: newVersion });
 
       for (const r of totalResponses) {
-        const targetCharacter = characters.find((c) => c.name === r.character);
+        const targetCharacter = currentCharacters.find(
+          (c) => c.name === r.character,
+        );
+
         const dialogueStart = work.content.indexOf(r.dialogue);
 
         if (targetCharacter) {
@@ -134,7 +139,10 @@ const handler = auth(async (req: Request) => {
             name: r.character,
             workspaceId: body.workspaceId,
           });
+
           if (newCharacter[0] && workVersion[0]) {
+            currentCharacters.push(newCharacter[0]);
+
             const dialogue = await api.dialogues.create({
               workspaceId: body.workspaceId,
               workId: work.id,
