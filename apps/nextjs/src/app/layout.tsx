@@ -9,6 +9,7 @@ import { Toaster } from "@aura/ui/toast";
 import { TRPCReactProvider } from "~/trpc/react";
 
 import "~/app/globals.css";
+import "reactflow/dist/style.css";
 
 import { Container } from "~/components/container";
 import { env } from "~/env";
