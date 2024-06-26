@@ -1,4 +1,4 @@
-import { inferRouterOutputs, TRPCRouterRecord } from "@trpc/server";
+import { TRPCRouterRecord } from "@trpc/server";
 import { z } from "zod";
 
 import { and, desc, eq } from "@aura/db";
@@ -50,8 +50,6 @@ export const worksRouter = {
           },
         },
       });
-
-      console.log(query.toSQL());
 
       return query;
     }),

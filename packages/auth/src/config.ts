@@ -19,7 +19,7 @@ export const authConfig = {
     accountsTable: Account,
     sessionsTable: Session,
   }),
-  debug: true,
+  debug: false,
   providers: [
     Google({
       clientId: process.env.AUTH_GOOGLE_CLIENT_ID,
