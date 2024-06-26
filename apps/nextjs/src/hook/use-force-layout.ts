@@ -24,19 +24,18 @@ const elementCountSelector = (state: ReactFlowState) =>
 const nodesInitializedSelector = (state: ReactFlowState) =>
   Array.from(state.nodeInternals.values()).every(
     (node) => node.width && node.height,
-  ) && state.nodeInternals.size;
+  );
 
-function useForceLayout({
-  strength = -1000,
-  distance = 150,
-}: UseForceLayoutOptions) {
+function useForceLayout({ strength, distance }: UseForceLayoutOptions) {
   const elementCount = useStore(elementCountSelector);
   const nodesInitialized = useStore(nodesInitializedSelector);
   const { setNodes, getNodes, getEdges } = useReactFlow();
 
+  const nodes = getNodes();
+  const edges = getEdges();
+
   React.useEffect(() => {
-    const nodes = getNodes();
-    const edges = getEdges();
+    console.log(nodes, nodesInitialized);
 
     if (!nodes.length || !nodesInitialized) {
       return;
@@ -54,19 +53,22 @@ function useForceLayout({
 
     const simulation = forceSimulation()
       .nodes(simulationNodes)
-      .force("charge", forceManyBody().strength(strength))
+      .force("charge", forceManyBody().strength(-200))
       .force(
         "link",
         forceLink(simulationLinks)
           .id((d: any) => d.id)
-          .strength(0.05)
+          .strength(1)
           .distance(distance),
       )
-      .force("x", forceX().x(0).strength(0.08))
-      .force("y", forceY().y(0).strength(0.08))
+      .force("x", forceX().x(0).strength(0.1))
+      .force("y", forceY().y(0).strength(0.1))
       .on("tick", () => {
+        console.log("tick");
+
         setNodes(
           simulationNodes.map((node) => ({
+            ...node,
             id: node.id,
             data: node.data,
             position: { x: node.x ?? 0, y: node.y ?? 0 },

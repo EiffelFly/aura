@@ -1,12 +1,15 @@
 "use client";
 
 import * as React from "react";
-import ReactFlow, { Edge, Node, ReactFlowProvider } from "reactflow";
+import { Edge, Node, ReactFlowProvider } from "reactflow";
 import { v4 as uuidv4 } from "uuid";
 
 import { RouterOutputs } from "@aura/api";
 
-import { DialogueNodeData, DialoguesForceGraph } from "./DialoguesForceGraph";
+import {
+  DialoguesForceGraph,
+  DialoguesForceGraphNodeData,
+} from "./DialoguesForceGraph";
 
 export const DialogueView = ({
   dialogues,
@@ -14,14 +17,18 @@ export const DialogueView = ({
   dialogues: RouterOutputs["dialogues"]["allByVersion"];
 }) => {
   const graph = React.useMemo(() => {
-    const nodes: Node<DialogueNodeData>[] = [];
+    const nodes: Node<DialoguesForceGraphNodeData>[] = [];
     const edges: Edge[] = [];
+
+    console.log(dialogues);
 
     for (const dialogue of dialogues) {
       nodes.push({
         id: dialogue.id,
+        type: "dialogueNode",
         data: {
           content: dialogue.content,
+          summary: dialogue.summary,
         },
         position: {
           x: 0,
@@ -29,16 +36,15 @@ export const DialogueView = ({
         },
       });
 
-      console.log(dialogue);
-
       if (
         dialogue.character &&
         nodes.findIndex((e) => e.id === dialogue.characterId) === -1
       ) {
         nodes.push({
-          id: dialogue.id,
+          id: dialogue.characterId,
+          type: "characterNode",
           data: {
-            content: dialogue.content,
+            name: dialogue.character.name,
           },
           position: {
             x: 0,
@@ -49,6 +55,7 @@ export const DialogueView = ({
 
       edges.push({
         id: uuidv4(),
+        type: "customEdge",
         source: dialogue.characterId,
         target: dialogue.id,
       });
