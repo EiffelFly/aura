@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import ReactFlow, {
   Background,
   Edge,
@@ -13,6 +14,7 @@ import useForceLayout from "~/hook/use-force-layout";
 import { CharacterNode } from "./CharacterNode";
 import { CustomEdge } from "./CustomEdge";
 import { DialogueNode } from "./DialogueNode";
+import { ZoomSlider } from "./ZoomSlider";
 
 const nodeOrigin: NodeOrigin = [0.5, 0.5];
 
@@ -63,8 +65,13 @@ export const DialoguesForceGraph = ({
         duration: 500,
         padding: 40,
       }}
+      maxZoom={5}
+      minZoom={0.1}
     >
       <Background />
+      <div className="absolute left-2 top-1/2 z-50 h-[280px] w-16 -translate-y-1/2 rounded-md bg-muted">
+        <ZoomSlider />
+      </div>
     </ReactFlow>
   );
 };
