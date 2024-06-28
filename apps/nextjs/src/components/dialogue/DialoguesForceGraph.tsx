@@ -10,6 +10,7 @@ import ReactFlow, {
   useNodesState,
 } from "reactflow";
 
+import { FORCE_GRAPH } from "~/constant/force-graph";
 import useForceLayout from "~/hook/use-force-layout";
 import { CharacterNode } from "./CharacterNode";
 import { CustomEdge } from "./CustomEdge";
@@ -65,8 +66,8 @@ export const DialoguesForceGraph = ({
         duration: 500,
         padding: 40,
       }}
-      maxZoom={5}
-      minZoom={0.5}
+      maxZoom={FORCE_GRAPH.maxZoom}
+      minZoom={FORCE_GRAPH.minZoom}
     >
       <Background />
       <div className="absolute left-2 top-1/2 z-50 h-[280px] w-16 -translate-y-1/2 rounded-md bg-muted">

@@ -8,8 +8,8 @@ import { useStore } from "reactflow";
 
 import { cn } from "@aura/ui";
 
-const SLIDES_MAX = 5;
-const SLIDES_MIN = 0.5;
+import { FORCE_GRAPH } from "~/constant/force-graph";
+
 const SLIDES_STEP = 0.1;
 
 export const ZoomSlider = () => {
@@ -26,13 +26,13 @@ export const ZoomSlider = () => {
 
   const slides = Array.from(
     {
-      length: (SLIDES_MAX - SLIDES_MIN) / SLIDES_STEP + 1,
+      length: (FORCE_GRAPH.maxZoom - FORCE_GRAPH.minZoom) / SLIDES_STEP + 1,
     },
     (_, i) => {
       if (i === 0) {
-        return SLIDES_MIN;
+        return FORCE_GRAPH.minZoom;
       } else {
-        return SLIDES_MIN + i * SLIDES_STEP;
+        return FORCE_GRAPH.minZoom + i * SLIDES_STEP;
       }
     },
   );
