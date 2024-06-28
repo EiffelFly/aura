@@ -9,17 +9,19 @@ import { useStore } from "reactflow";
 import { cn } from "@aura/ui";
 
 const SLIDES_MAX = 5;
-const SLIDES_MIN = 0.1;
+const SLIDES_MIN = 0;
 const SLIDES_STEP = 0.1;
 
 export const ZoomSlider = () => {
   const zoom = useStore((state) => state.transform[2]);
 
-  const rootNodeRef = React.useRef<HTMLDivElement>(null);
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
     axis: "y",
     dragFree: true,
+
+    // Clear leading and trailing empty space that causes excessive scrolling
+    containScroll: false,
   });
 
   const slides = Array.from(
@@ -29,7 +31,7 @@ export const ZoomSlider = () => {
     (_, i) => Math.floor(SLIDES_MIN + i * SLIDES_STEP * 10) / 10,
   );
 
-  const throttledUpdateWork = React.useCallback(
+  const throttledUpdateEmblaScroll = React.useCallback(
     throttle(
       (
         emblaApi: EmblaCarouselType | undefined,
@@ -52,29 +54,34 @@ export const ZoomSlider = () => {
   );
 
   React.useEffect(() => {
-    throttledUpdateWork(emblaApi, zoom, slides);
+    if (!emblaApi) {
+      return;
+    }
+
+    throttledUpdateEmblaScroll(emblaApi, zoom, slides);
   }, [emblaApi, zoom, slides]);
 
   return (
     <div className="flex h-full">
       <div
-        className="embla flex h-full min-w-full overflow-hidden py-[120px]"
+        className="embla pointer-events-none flex h-full min-w-full overflow-hidden"
         ref={emblaRef}
       >
         <div className="flex h-full w-full flex-col">
-          {slides.map((slide) => (
+          {slides.map((slide, i) => (
             <div
-              className="slide ml-4 flex flex-row items-center gap-x-1"
-              style={{ flex: "0 0 80%" }}
+              className="slide flex flex-row items-center gap-x-1 pl-4"
+              style={{ flex: "0 0 10%" }}
               key={slide}
             >
               <div
                 className={cn(
                   "h-0.5 border-b border-border",
                   (slide * 10) % 5 === 0 ? "w-1/4" : "w-1/6",
+                  emblaApi?.selectedScrollSnap() === i ? "border-primary" : "",
                 )}
               />
-              <p className=" font-sans text-xs text-secondary">
+              <p className="font-sans text-xs text-secondary">
                 {(slide * 10) % 5 === 0 ? slide : ""}
               </p>
             </div>
