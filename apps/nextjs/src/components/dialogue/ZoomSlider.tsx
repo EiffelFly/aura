@@ -9,7 +9,7 @@ import { useStore } from "reactflow";
 import { cn } from "@aura/ui";
 
 const SLIDES_MAX = 5;
-const SLIDES_MIN = 0;
+const SLIDES_MIN = 0.5;
 const SLIDES_STEP = 0.1;
 
 export const ZoomSlider = () => {
@@ -26,30 +26,25 @@ export const ZoomSlider = () => {
 
   const slides = Array.from(
     {
-      length: (SLIDES_MAX - SLIDES_MIN) / SLIDES_STEP,
+      length: (SLIDES_MAX - SLIDES_MIN) / SLIDES_STEP + 1,
     },
-    (_, i) => Math.floor(SLIDES_MIN + i * SLIDES_STEP * 10) / 10,
+    (_, i) => {
+      if (i === 0) {
+        return SLIDES_MIN;
+      } else {
+        return SLIDES_MIN + i * SLIDES_STEP;
+      }
+    },
   );
 
   const throttledUpdateEmblaScroll = React.useCallback(
-    throttle(
-      (
-        emblaApi: EmblaCarouselType | undefined,
-        zoom: number,
-        slides: number[],
-      ) => {
-        if (emblaApi) {
-          const targetSlideIndex = slides.findIndex(
-            (e) => e === Math.round(zoom * 10) / 10,
-          );
-
-          if (targetSlideIndex !== -1) {
-            emblaApi.scrollTo(targetSlideIndex);
-          }
+    throttle((emblaApi: EmblaCarouselType | undefined, index: number) => {
+      if (emblaApi) {
+        if (index !== -1) {
+          emblaApi.scrollTo(index);
         }
-      },
-      50,
-    ),
+      }
+    }, 50),
     [],
   );
 
@@ -58,7 +53,13 @@ export const ZoomSlider = () => {
       return;
     }
 
-    throttledUpdateEmblaScroll(emblaApi, zoom, slides);
+    const targetSlideIndex = slides.findIndex(
+      (e) => e === Math.floor(zoom * 10) / 10,
+    );
+
+    console.log(zoom, targetSlideIndex);
+
+    throttledUpdateEmblaScroll(emblaApi, targetSlideIndex);
   }, [emblaApi, zoom, slides]);
 
   return (
@@ -78,7 +79,10 @@ export const ZoomSlider = () => {
                 className={cn(
                   "h-0.5 border-b border-border",
                   (slide * 10) % 5 === 0 ? "w-1/4" : "w-1/6",
-                  emblaApi?.selectedScrollSnap() === i ? "border-primary" : "",
+                  slides.findIndex((e) => e === Math.floor(zoom * 10) / 10) ===
+                    i
+                    ? "border-primary"
+                    : "",
                 )}
               />
               <p className="font-sans text-xs text-secondary">

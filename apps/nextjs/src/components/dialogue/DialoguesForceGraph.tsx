@@ -66,7 +66,7 @@ export const DialoguesForceGraph = ({
         padding: 40,
       }}
       maxZoom={5}
-      minZoom={0.1}
+      minZoom={0.5}
     >
       <Background />
       <div className="absolute left-2 top-1/2 z-50 h-[280px] w-16 -translate-y-1/2 rounded-md bg-muted">
