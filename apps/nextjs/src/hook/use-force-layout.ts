@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import {
+  forceCollide,
   forceLink,
   forceManyBody,
   forceSimulation,
@@ -29,11 +30,13 @@ const nodesInitializedSelector = (state: ReactFlowState) =>
 function useForceLayout({ strength, distance }: UseForceLayoutOptions) {
   const elementCount = useStore(elementCountSelector);
   const nodesInitialized = useStore(nodesInitializedSelector);
+  const zoom = useStore((state) => state.transform[2]);
   const { setNodes, getNodes, getEdges } = useReactFlow();
 
   const nodes = getNodes();
   const edges = getEdges();
 
+  // Debounce the whole computation
   React.useEffect(() => {
     console.log(nodes, nodesInitialized);
 
@@ -53,14 +56,22 @@ function useForceLayout({ strength, distance }: UseForceLayoutOptions) {
 
     const simulation = forceSimulation()
       .nodes(simulationNodes)
-      .force("charge", forceManyBody().strength(-200))
+      .force("charge", forceManyBody().strength(-100))
       .force(
         "link",
         forceLink(simulationLinks)
           .id((d: any) => d.id)
           .strength(1)
-          .distance(distance),
+          .distance(5),
       )
+      .force(
+        "collide",
+        forceCollide()
+          .strength(2)
+          .radius((d: any) => d.width / 2 + 100),
+      )
+      .alphaDecay(0.05)
+      .velocityDecay(0.9)
       .force("x", forceX().x(0).strength(0.1))
       .force("y", forceY().y(0).strength(0.1))
       .on("tick", () => {
@@ -88,6 +99,7 @@ function useForceLayout({ strength, distance }: UseForceLayoutOptions) {
     strength,
     distance,
     nodesInitialized,
+    zoom,
   ]);
 }
 

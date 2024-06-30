@@ -49,7 +49,7 @@ export const DialoguesForceGraph = ({
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-  useForceLayout({ strength: 200, distance: 400 });
+  useForceLayout({ strength: 200, distance: 100 });
 
   return (
     <ReactFlow

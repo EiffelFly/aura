@@ -1,11 +1,13 @@
 import { Handle, NodeProps, Position } from "reactflow";
 
-import { DialogueNodeData } from "./DialoguesForceGraph";
+import { CharacterNodeData, DialogueNodeData } from "./DialoguesForceGraph";
 
-export const CharacterNode = ({ data, id }: NodeProps<DialogueNodeData>) => {
+export const CharacterNode = ({ data, id }: NodeProps<CharacterNodeData>) => {
   return (
-    <div className="relative h-10 w-10  bg-secondary">
-      {data.content}
+    <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-secondary">
+      <p className="flex text-center font-sans text-base text-foreground">
+        {data.name}
+      </p>
       <Handle
         type="source"
         position={Position.Right}

@@ -12,11 +12,11 @@ export const DialogueNode = ({ data, id }: NodeProps<DialogueNodeData>) => {
   return (
     <div
       className={cn(
-        "relative h-10 w-10 bg-secondary",
-        zoom >= 1.2 ? "" : "rounded-full",
+        "relative flex max-w-[320px] bg-secondary p-4",
+        zoom >= 1.0 ? "" : "",
       )}
     >
-      {/* {zoom >= 1.5 ? data.content : data.summary} */}
+      {zoom >= 1.0 ? data.content : data.summary}
       <Handle
         type="target"
         position={Position.Right}

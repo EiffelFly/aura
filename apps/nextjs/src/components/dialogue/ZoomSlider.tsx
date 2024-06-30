@@ -57,8 +57,6 @@ export const ZoomSlider = () => {
       (e) => e === Math.floor(zoom * 10) / 10,
     );
 
-    console.log(zoom, targetSlideIndex);
-
     throttledUpdateEmblaScroll(emblaApi, targetSlideIndex);
   }, [emblaApi, zoom, slides]);
 
